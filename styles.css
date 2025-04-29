@@ -1,0 +1,94 @@
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f4f6f8;
+  color: #333;
+}
+header {
+  background: #114c8d;
+  color: white;
+  padding: 1rem;
+}
+header h1 {
+  margin: 0;
+}
+nav {
+  margin-top: 1rem;
+}
+nav button {
+  margin-right: 0.5rem;
+  padding: 0.5em 1em;
+  background: white;
+  border: none;
+  border-radius: 4px;
+  color: #114c8d;
+  font-weight: bold;
+  cursor: pointer;
+}
+nav button:hover {
+  background: #dce6f1;
+}
+
+main {
+  padding: 1.5rem;
+}
+
+section {
+  display: none;
+}
+section.active {
+  display: block;
+}
+
+#compliance-stats {
+  display: flex;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.stat-box {
+  flex: 1;
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.status-ok {
+  color: #27ae60;
+}
+.status-expiring {
+  color: #e67e22;
+}
+.status-expired {
+  color: #e74c3c;
+}
+
+ul {
+  padding: 0;
+  list-style-type: none;
+}
+ul li {
+  background: white;
+  margin-bottom: 0.5rem;
+  padding: 0.8rem;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+form input, form button {
+  display: block;
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: 0.7rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+form button {
+  background: #114c8d;
+  color: white;
+  font-weight: bold;
+}
+form button:hover {
+  background: #0c3970;
+}

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Compliance Dashboard</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <header>
+    <h1>Compliance Tracking Dashboard</h1>
+    <nav>
+      <button onclick="showSection('dashboard')">Dashboard</button>
+      <button onclick="showSection('staff')">Staff Management</button>
+      <button onclick="showSection('alerts')">Alerts</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Dashboard Section -->
+    <section id="dashboard" class="active">
+      <h2>Overall Compliance</h2>
+      <div id="compliance-stats"></div>
+      <h3>Upcoming Expirations</h3>
+      <ul id="expirations-list"></ul>
+    </section>
+
+    <!-- Staff Management Section -->
+    <section id="staff">
+      <h2>Staff Certification Management</h2>
+      <div id="staff-list"></div>
+
+      <h3>Upload Compliance Document</h3>
+      <form id="upload-form">
+        <input type="file" id="file-input" accept=".pdf,.jpg,.png" required />
+        <input type="text" id="staff-name" placeholder="Staff Name" required />
+        <input type="text" id="certificate-name" placeholder="Certificate Name" required />
+        <input type="date" id="expiry-date" required />
+        <button type="submit">Upload & Assign</button>
+      </form>
+    </section>
+
+    <!-- Alerts Section -->
+    <section id="alerts">
+      <h2>System Alerts</h2>
+      <ul id="alerts-list"></ul>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
