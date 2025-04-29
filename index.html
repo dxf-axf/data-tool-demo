@@ -3,19 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Compliance Dashboard</title>
+  <title>Soley's Fast Food Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="sidebar">
-    <h2>SafeTrack</h2>
+    <h2>Soley's Fast Food</h2>
     <nav>
       <ul>
         <li class="active" onclick="showSection('dashboard')">Dashboard</li>
         <li onclick="showSection('staff')">Staff</li>
+        <li onclick="showSection('sales')">Sales</li>
+        <li onclick="showSection('stock')">Stock</li>
+        <li onclick="showSection('chatbot')">Chatbot</li>
         <li onclick="showSection('alerts')">Alerts</li>
-        <li onclick="showSection('settings')">Settings</li>
       </ul>
     </nav>
   </div>
@@ -58,13 +60,30 @@
         </form>
       </section>
 
+      <section id="sales">
+        <h2>Sales History</h2>
+        <div id="sales-list" class="list-container"></div>
+      </section>
+
+      <section id="stock">
+        <h2>Stock Management</h2>
+        <div id="stock-list" class="list-container"></div>
+      </section>
+
+      <section id="chatbot">
+        <h2>Chatbot Assistant</h2>
+        <div class="chat-container">
+          <div id="chat-window" class="chat-window"></div>
+          <form id="chat-form">
+            <input type="text" id="chat-input" placeholder="Ask me about sales or stock..." required />
+            <button type="submit">Send</button>
+          </form>
+        </div>
+      </section>
+
       <section id="alerts">
         <h2>System Alerts</h2>
         <ul id="alerts-list" class="list-container"></ul>
-      </section>
-
-      <section id="settings">
-        <h2>Settings (Coming Soon)</h2>
       </section>
     </main>
   </div>
