@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Soley's Fast Food Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Soley's Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -14,60 +14,25 @@
       <ul>
         <li class="active" onclick="showSection('dashboard')">Dashboard</li>
         <li onclick="showSection('staff')">Staff</li>
-        <li onclick="showSection('sales')">Sales</li>
-        <li onclick="showSection('stock')">Stock</li>
         <li onclick="showSection('chatbot')">Chatbot</li>
-        <li onclick="showSection('alerts')">Alerts</li>
       </ul>
     </nav>
   </div>
   <div class="main">
-    <header>
-      <h1>Compliance Monitoring</h1>
-    </header>
+    <header><h1>Compliance Monitoring</h1></header>
     <main>
       <section id="dashboard" class="active">
         <div class="cards">
-          <div class="card green">
-            <h3>Compliant</h3>
-            <p id="count-ok">0</p>
-          </div>
-          <div class="card orange">
-            <h3>Expiring Soon</h3>
-            <p id="count-expiring">0</p>
-          </div>
-          <div class="card red">
-            <h3>Expired</h3>
-            <p id="count-expired">0</p>
-          </div>
+          <div class="card green"><h3>Compliant</h3><p id="count-ok">0</p></div>
+          <div class="card orange"><h3>Expiring Soon</h3><p id="count-expiring">0</p></div>
+          <div class="card red"><h3>Expired</h3><p id="count-expired">0</p></div>
         </div>
-        <div class="list-container">
-          <h2>Upcoming Expirations</h2>
-          <ul id="expirations-list"></ul>
-        </div>
+        <div class="list-container"><h2>Upcoming Expirations</h2><ul id="expirations-list"></ul></div>
       </section>
 
       <section id="staff">
         <h2>Staff Certification Management</h2>
         <div id="staff-list" class="list-container"></div>
-        <form id="upload-form">
-          <h3>Upload New Certification</h3>
-          <input type="file" id="file-input" accept=".pdf,.jpg,.png" required />
-          <input type="text" id="staff-name" placeholder="Staff Name" required />
-          <input type="text" id="certificate-name" placeholder="Certificate Name" required />
-          <input type="date" id="expiry-date" required />
-          <button type="submit">Upload</button>
-        </form>
-      </section>
-
-      <section id="sales">
-        <h2>Sales History</h2>
-        <div id="sales-list" class="list-container"></div>
-      </section>
-
-      <section id="stock">
-        <h2>Stock Management</h2>
-        <div id="stock-list" class="list-container"></div>
       </section>
 
       <section id="chatbot">
@@ -75,15 +40,10 @@
         <div class="chat-container">
           <div id="chat-window" class="chat-window"></div>
           <form id="chat-form">
-            <input type="text" id="chat-input" placeholder="Ask me about sales or stock..." required />
+            <textarea id="chat-input" placeholder="Ask a question..." rows="2"></textarea>
             <button type="submit">Send</button>
           </form>
         </div>
-      </section>
-
-      <section id="alerts">
-        <h2>System Alerts</h2>
-        <ul id="alerts-list" class="list-container"></ul>
       </section>
     </main>
   </div>
