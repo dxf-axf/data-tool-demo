@@ -1,7 +1,7 @@
 const staffData = [
-  { name: "John Doe", certificate: "Food Safety", expires: "2025-03-01", status: "ok" },
-  { name: "Jane Smith", certificate: "First Aid", expires: "2024-06-01", status: "expiring" },
-  { name: "Bob Lee", certificate: "Allergens", expires: "2023-11-20", status: "expired" }
+  { name: "Alex Brooks", certificate: "Food Safety", expires: "2025-03-01", status: "ok" },
+  { name: "Rizwan Hussain", certificate: "First Aid", expires: "2024-06-01", status: "expiring" },
+  { name: "Ben Taylor", certificate: "Allergens", expires: "2023-11-20", status: "expired" }
 ];
 
 function showSection(id) {
@@ -17,9 +17,9 @@ function renderStats() {
   const ok = staffData.filter(s => s.status === "ok").length;
   const expiring = staffData.filter(s => s.status === "expiring").length;
   const expired = staffData.filter(s => s.status === "expired").length;
-  document.getElementById("count-ok").innerText = ok;
-  document.getElementById("count-expiring").innerText = expiring;
-  document.getElementById("count-expired").innerText = expired;
+  document.getElementById("count-ok").innerText = `${ok} Compliant`;
+  document.getElementById("count-expiring")?.innerText = `${expiring} Expiring`;
+  document.getElementById("count-expired")?.innerText = `${expired} Expired`;
   document.getElementById("expirations-list").innerHTML = staffData
     .filter(s => s.status !== "ok")
     .map(s => `<li>${s.name} - ${s.certificate} (expires: ${s.expires})</li>`)

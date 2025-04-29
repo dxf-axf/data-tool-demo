@@ -14,6 +14,9 @@
       <ul>
         <li class="active" onclick="showSection('dashboard')">Dashboard</li>
         <li onclick="showSection('staff')">Staff</li>
+        <li onclick="showSection('sales')">Sales</li>
+        <li onclick="showSection('stock')">Inventory</li>
+        <li onclick="showSection('alerts')">Alerts</li>
         <li onclick="showSection('chatbot')">Chatbot</li>
       </ul>
     </nav>
@@ -22,17 +25,52 @@
     <header><h1>Compliance Monitoring</h1></header>
     <main>
       <section id="dashboard" class="active">
-        <div class="cards">
-          <div class="card green"><h3>Compliant</h3><p id="count-ok">0</p></div>
-          <div class="card orange"><h3>Expiring Soon</h3><p id="count-expiring">0</p></div>
-          <div class="card red"><h3>Expired</h3><p id="count-expired">0</p></div>
+        <div class="grid-cards">
+          <div class="card green" onclick="showSection('staff')">
+            <h3>Staff</h3>
+            <p id="count-ok">0 Compliant</p>
+          </div>
+          <div class="card orange" onclick="showSection('sales')">
+            <h3>Sales</h3>
+            <p>Recent activity & trends</p>
+          </div>
+          <div class="card red" onclick="showSection('stock')">
+            <h3>Inventory</h3>
+            <p>Stock levels & reorders</p>
+          </div>
+          <div class="card purple" onclick="showSection('alerts')">
+            <h3>Alerts</h3>
+            <p>System notifications</p>
+          </div>
+          <div class="card blue" onclick="showSection('chatbot')">
+            <h3>Chatbot</h3>
+            <p>Ask anything</p>
+          </div>
         </div>
-        <div class="list-container"><h2>Upcoming Expirations</h2><ul id="expirations-list"></ul></div>
+        <div class="list-container">
+          <h2>Upcoming Expirations</h2>
+          <ul id="expirations-list"></ul>
+        </div>
       </section>
 
       <section id="staff">
         <h2>Staff Certification Management</h2>
         <div id="staff-list" class="list-container"></div>
+      </section>
+
+      <section id="sales">
+        <h2>Sales History</h2>
+        <div id="sales-list" class="list-container"></div>
+      </section>
+
+      <section id="stock">
+        <h2>Inventory Management</h2>
+        <div id="stock-list" class="list-container"></div>
+      </section>
+
+      <section id="alerts">
+        <h2>System Alerts</h2>
+        <ul id="alerts-list" class="list-container"></ul>
       </section>
 
       <section id="chatbot">
