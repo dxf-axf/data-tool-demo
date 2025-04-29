@@ -21,7 +21,6 @@ const alertsData = [
   { message: "Rizwan Hussain's certification expires in 30 days." }
 ];
 
-// Switch between sections
 function showSection(id) {
   document.querySelectorAll("section").forEach(s => s.classList.remove("active"));
   document.getElementById(id).classList.add("active");
@@ -31,7 +30,6 @@ function showSection(id) {
   });
 }
 
-// Populate dashboard stats
 function renderStats() {
   const ok = staffData.filter(s => s.status === "ok").length;
   const expiring = staffData.filter(s => s.status === "expiring").length;
@@ -69,12 +67,20 @@ function renderAlerts() {
     .join('');
 }
 
-// Chatbot integration
+// Basic local chatbot logic
+const chatbotKnowledge = {
+  "top selling items": "Our top-selling items are Burger, Pizza, and Milkshake.",
+  "sales today": "Today's total sales are approximately $195.",
+  "current stock levels": stockData.map(item => `${item.item}: ${item.stock} units`).join(', '),
+  "staff compliance": `${staffData.filter(s => s.status === 'ok').length} staff members are compliant.`,
+  "alerts": alertsData.map(a => a.message).join('; ')
+};
+
 const chatForm = document.getElementById("chat-form");
 const chatInput = document.getElementById("chat-input");
 const chatWindow = document.getElementById("chat-window");
 
-chatForm.addEventListener("submit", async e => {
+chatForm.addEventListener("submit", e => {
   e.preventDefault();
   const message = chatInput.value.trim();
   if (!message) return;
@@ -82,32 +88,18 @@ chatForm.addEventListener("submit", async e => {
   appendMessage("user", message);
   chatInput.value = '';
 
-  appendMessage("bot", "Typing...");
+  const lower = message.toLowerCase();
+  let reply = "Sorry, I didn't understand that. Try asking about top selling items, stock levels, staff compliance, or alerts.";
 
-  try {
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer YOUR_OPENAI_API_KEY` // 🔐 Replace with env variable in backend or secure proxy
-      },
-      body: JSON.stringify({
-        model: "gpt-3.5-turbo",
-        messages: [
-          { role: "system", content: "You are a helpful assistant for a fast food analytics dashboard." },
-          { role: "user", content: message }
-        ]
-      })
-    });
-
-    const data = await response.json();
-    chatWindow.lastChild.remove();
-    const reply = data.choices[0].message.content;
-    appendMessage("bot", reply);
-  } catch (err) {
-    chatWindow.lastChild.remove();
-    appendMessage("bot", "Sorry, I couldn't get a response.");
+  for (const key in chatbotKnowledge) {
+    if (lower.includes(key)) {
+      reply = chatbotKnowledge[key];
+      break;
+    }
   }
+
+  appendMessage("bot", reply);
+  chatWindow.scrollTop = chatWindow.scrollHeight;
 });
 
 function appendMessage(role, text) {
