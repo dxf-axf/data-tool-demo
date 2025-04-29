@@ -2,51 +2,72 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Compliance Dashboard</title>
-  <link rel="stylesheet" href="style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <h1>Compliance Tracking Dashboard</h1>
+  <div class="sidebar">
+    <h2>SafeTrack</h2>
     <nav>
-      <button onclick="showSection('dashboard')">Dashboard</button>
-      <button onclick="showSection('staff')">Staff Management</button>
-      <button onclick="showSection('alerts')">Alerts</button>
+      <ul>
+        <li class="active" onclick="showSection('dashboard')">Dashboard</li>
+        <li onclick="showSection('staff')">Staff</li>
+        <li onclick="showSection('alerts')">Alerts</li>
+        <li onclick="showSection('settings')">Settings</li>
+      </ul>
     </nav>
-  </header>
+  </div>
+  <div class="main">
+    <header>
+      <h1>Compliance Monitoring</h1>
+    </header>
+    <main>
+      <section id="dashboard" class="active">
+        <div class="cards">
+          <div class="card green">
+            <h3>Compliant</h3>
+            <p id="count-ok">0</p>
+          </div>
+          <div class="card orange">
+            <h3>Expiring Soon</h3>
+            <p id="count-expiring">0</p>
+          </div>
+          <div class="card red">
+            <h3>Expired</h3>
+            <p id="count-expired">0</p>
+          </div>
+        </div>
+        <div class="list-container">
+          <h2>Upcoming Expirations</h2>
+          <ul id="expirations-list"></ul>
+        </div>
+      </section>
 
-  <main>
-    <!-- Dashboard Section -->
-    <section id="dashboard" class="active">
-      <h2>Overall Compliance</h2>
-      <div id="compliance-stats"></div>
-      <h3>Upcoming Expirations</h3>
-      <ul id="expirations-list"></ul>
-    </section>
+      <section id="staff">
+        <h2>Staff Certification Management</h2>
+        <div id="staff-list" class="list-container"></div>
+        <form id="upload-form">
+          <h3>Upload New Certification</h3>
+          <input type="file" id="file-input" accept=".pdf,.jpg,.png" required />
+          <input type="text" id="staff-name" placeholder="Staff Name" required />
+          <input type="text" id="certificate-name" placeholder="Certificate Name" required />
+          <input type="date" id="expiry-date" required />
+          <button type="submit">Upload</button>
+        </form>
+      </section>
 
-    <!-- Staff Management Section -->
-    <section id="staff">
-      <h2>Staff Certification Management</h2>
-      <div id="staff-list"></div>
+      <section id="alerts">
+        <h2>System Alerts</h2>
+        <ul id="alerts-list" class="list-container"></ul>
+      </section>
 
-      <h3>Upload Compliance Document</h3>
-      <form id="upload-form">
-        <input type="file" id="file-input" accept=".pdf,.jpg,.png" required />
-        <input type="text" id="staff-name" placeholder="Staff Name" required />
-        <input type="text" id="certificate-name" placeholder="Certificate Name" required />
-        <input type="date" id="expiry-date" required />
-        <button type="submit">Upload & Assign</button>
-      </form>
-    </section>
-
-    <!-- Alerts Section -->
-    <section id="alerts">
-      <h2>System Alerts</h2>
-      <ul id="alerts-list"></ul>
-    </section>
-  </main>
-
+      <section id="settings">
+        <h2>Settings (Coming Soon)</h2>
+      </section>
+    </main>
+  </div>
   <script src="script.js"></script>
 </body>
 </html>
