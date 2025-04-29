@@ -124,3 +124,34 @@ section.active { display: block; }
 #chat-form button:hover {
   background: #219150;
 }
+
+.message {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+.message.user {
+  align-items: flex-end;
+}
+.message.bot {
+  align-items: flex-start;
+}
+.bubble {
+  max-width: 70%;
+  padding: 0.75rem 1rem;
+  border-radius: 20px;
+  font-size: 1rem;
+  background: #e0e0e0;
+  color: #000;
+  line-height: 1.4;
+}
+.message.user .bubble {
+  background: #27ae60;
+  color: white;
+  border-bottom-right-radius: 0;
+}
+.message.bot .bubble {
+  background: #f1f1f1;
+  color: #333;
+  border-bottom-left-radius: 0;
+}

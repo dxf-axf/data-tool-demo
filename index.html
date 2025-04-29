@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Soley's Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
@@ -21,30 +21,26 @@
       </ul>
     </nav>
   </div>
+
   <div class="main">
     <header><h1>Compliance Monitoring</h1></header>
     <main>
       <section id="dashboard" class="active">
         <div class="grid-cards">
           <div class="card green" onclick="showSection('staff')">
-            <h3>Staff</h3>
-            <p id="count-ok">0 Compliant</p>
+            <h3>Staff</h3><p>Compliance Status</p>
           </div>
           <div class="card orange" onclick="showSection('sales')">
-            <h3>Sales</h3>
-            <p>Recent activity & trends</p>
+            <h3>Sales</h3><p>Sales Overview</p>
           </div>
           <div class="card red" onclick="showSection('stock')">
-            <h3>Inventory</h3>
-            <p>Stock levels & reorders</p>
+            <h3>Inventory</h3><p>Stock Levels</p>
           </div>
           <div class="card purple" onclick="showSection('alerts')">
-            <h3>Alerts</h3>
-            <p>System notifications</p>
+            <h3>Alerts</h3><p>Notifications</p>
           </div>
           <div class="card blue" onclick="showSection('chatbot')">
-            <h3>Chatbot</h3>
-            <p>Ask anything</p>
+            <h3>Chatbot</h3><p>Ask Questions</p>
           </div>
         </div>
         <div class="list-container">
@@ -85,6 +81,7 @@
       </section>
     </main>
   </div>
+
   <script src="script.js"></script>
 </body>
 </html>
