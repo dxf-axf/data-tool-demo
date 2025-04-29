@@ -23,10 +23,15 @@ const alertsData = [
 
 function showSection(id) {
   document.querySelectorAll("section").forEach(s => s.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
+  const section = document.getElementById(id);
+  if (section) section.classList.add("active");
+
   document.querySelectorAll(".sidebar li").forEach(li => li.classList.remove("active"));
   document.querySelectorAll(".sidebar li").forEach(li => {
-    if (li.textContent.toLowerCase().includes(id)) li.classList.add("active");
+    const linkText = li.textContent.trim().toLowerCase();
+    if (linkText.includes(id.toLowerCase())) {
+      li.classList.add("active");
+    }
   });
 }
 
@@ -39,35 +44,34 @@ function renderStats() {
   document.getElementById("count-expired")?.innerText = `${expired} Expired`;
   document.getElementById("expirations-list").innerHTML = staffData
     .filter(s => s.status !== "ok")
-    .map(s => `<li>${s.name} - ${s.certificate} (expires: ${s.expires})</li>`)
+    .map(s => `<li>${s.name} - ${s.certificate} (expires: ${s.expires})</li>`)  
     .join('');
 }
 
 function renderStaff() {
   document.getElementById("staff-list").innerHTML = staffData
-    .map(s => `<div><strong>${s.name}</strong> — ${s.certificate} (expires: ${s.expires})</div>`)
+    .map(s => `<div><strong>${s.name}</strong> — ${s.certificate} (expires: ${s.expires})</div>`)  
     .join('');
 }
 
 function renderSales() {
   document.getElementById("sales-list").innerHTML = salesData
-    .map(s => `<div>${s.date} — ${s.item}: ${s.quantity} units sold ($${s.total})</div>`)
+    .map(s => `<div>${s.date} — ${s.item}: ${s.quantity} units sold ($${s.total})</div>`)  
     .join('');
 }
 
 function renderStock() {
   document.getElementById("stock-list").innerHTML = stockData
-    .map(s => `<div>${s.item}: ${s.stock} units in stock</div>`)
+    .map(s => `<div>${s.item}: ${s.stock} units in stock</div>`)  
     .join('');
 }
 
 function renderAlerts() {
   document.getElementById("alerts-list").innerHTML = alertsData
-    .map(a => `<li>${a.message}</li>`)
+    .map(a => `<li>${a.message}</li>`)  
     .join('');
 }
 
-// Basic local chatbot logic
 const chatbotKnowledge = {
   "top selling items": "Our top-selling items are Burger, Pizza, and Milkshake.",
   "sales today": "Today's total sales are approximately $195.",
@@ -110,7 +114,6 @@ function appendMessage(role, text) {
   chatWindow.scrollTop = chatWindow.scrollHeight;
 }
 
-// Initial render
 renderStats();
 renderStaff();
 renderSales();
