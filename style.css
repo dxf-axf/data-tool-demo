@@ -1,3 +1,5 @@
+/* 🎨 style.css – original version with grid layout and chatbot styling */
+
 body {
   margin: 0;
   font-family: 'Inter', sans-serif;
@@ -44,6 +46,26 @@ header {
 main {
   padding: 2rem;
 }
+
+.grid-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+.card {
+  padding: 1.5rem;
+  border-radius: 8px;
+  color: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  cursor: pointer;
+  text-align: center;
+}
+.card.green { background: #27ae60; }
+.card.orange { background: #f39c12; }
+.card.red { background: #e74c3c; }
+.card.purple { background: #9b59b6; }
+.card.blue { background: #3498db; }
 
 .list-container {
   background: white;

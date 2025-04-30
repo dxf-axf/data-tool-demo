@@ -26,8 +26,27 @@
     <header><h1>Compliance Monitoring</h1></header>
     <main>
       <section id="dashboard" class="active">
-        <h2>Upcoming Expirations</h2>
-        <ul id="expirations-list"></ul>
+        <div class="grid-cards">
+          <div class="card green" onclick="showSection('staff')">
+            <h3>Staff</h3><p>Compliance Status</p>
+          </div>
+          <div class="card orange" onclick="showSection('sales')">
+            <h3>Sales</h3><p>Sales Overview</p>
+          </div>
+          <div class="card red" onclick="showSection('stock')">
+            <h3>Inventory</h3><p>Stock Levels</p>
+          </div>
+          <div class="card purple" onclick="showSection('alerts')">
+            <h3>Alerts</h3><p>Notifications</p>
+          </div>
+          <div class="card blue" onclick="showSection('chatbot')">
+            <h3>Chatbot</h3><p>Ask Questions</p>
+          </div>
+        </div>
+        <div class="list-container">
+          <h2>Upcoming Expirations</h2>
+          <ul id="expirations-list"></ul>
+        </div>
       </section>
 
       <section id="staff">
