@@ -164,8 +164,11 @@ document.getElementById("add-staff-form")?.addEventListener("submit", function (
   renderNewStaffList();
 });
 
-renderStats();
-renderStaff();
-renderSales();
-renderStock();
-renderAlerts();
+window.onload = function () {
+  renderStats();
+  renderStaff();
+  renderSales();
+  renderStock();
+  renderAlerts();
+  renderNewStaffList();
+};
