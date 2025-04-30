@@ -1,4 +1,3 @@
-// Sample data
 const staffData = [
   { name: "Alex Brooks", certificate: "Food Safety", expires: "2025-03-01", status: "ok" },
   { name: "Rizwan Hussain", certificate: "First Aid", expires: "2024-06-01", status: "expiring" },
@@ -22,20 +21,16 @@ const alertsData = [
   { message: "Rizwan Hussain's certification expires in 30 days." }
 ];
 
-// ✅ Section switching logic
 function showSection(id) {
-  // Hide all sections
   document.querySelectorAll("section").forEach(section => {
     section.classList.remove("active");
   });
 
-  // Show the selected section
   const activeSection = document.getElementById(id);
   if (activeSection) {
     activeSection.classList.add("active");
   }
 
-  // Update sidebar active class
   document.querySelectorAll(".sidebar li").forEach(li => li.classList.remove("active"));
   document.querySelectorAll(".sidebar li").forEach(li => {
     const linkText = li.textContent.trim().toLowerCase();
@@ -45,7 +40,6 @@ function showSection(id) {
   });
 }
 
-// ✅ Render dashboard stats
 function renderStats() {
   const ok = staffData.filter(s => s.status === "ok").length;
   const expiring = staffData.filter(s => s.status === "expiring").length;
@@ -61,35 +55,30 @@ function renderStats() {
     .join('');
 }
 
-// ✅ Render Staff List
 function renderStaff() {
   document.getElementById("staff-list").innerHTML = staffData
     .map(s => `<div><strong>${s.name}</strong> — ${s.certificate} (expires: ${s.expires})</div>`)
     .join('');
 }
 
-// ✅ Render Sales List
 function renderSales() {
   document.getElementById("sales-list").innerHTML = salesData
     .map(s => `<div>${s.date} — ${s.item}: ${s.quantity} units sold ($${s.total})</div>`)
     .join('');
 }
 
-// ✅ Render Stock Inventory
 function renderStock() {
   document.getElementById("stock-list").innerHTML = stockData
     .map(s => `<div>${s.item}: ${s.stock} units in stock</div>`)
     .join('');
 }
 
-// ✅ Render Alerts
 function renderAlerts() {
   document.getElementById("alerts-list").innerHTML = alertsData
     .map(a => `<li>${a.message}</li>`)
     .join('');
 }
 
-// ✅ Simple keyword-matching chatbot
 const chatbotKnowledge = {
   "top selling items": "Our top-selling items are Burger, Pizza, and Milkshake.",
   "sales today": "Today's total sales are approximately $195.",
@@ -132,7 +121,6 @@ function appendMessage(role, text) {
   chatWindow.scrollTop = chatWindow.scrollHeight;
 }
 
-// ✅ Call render functions after loading
 renderStats();
 renderStaff();
 renderSales();
