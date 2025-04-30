@@ -1,5 +1,3 @@
-// 🟥 script.js – original working version with sidebar + grid + chatbot
-
 const staffData = [
   { name: "Alex Brooks", certificate: "Food Safety", expires: "2025-03-01", status: "ok" },
   { name: "Rizwan Hussain", certificate: "First Aid", expires: "2024-06-01", status: "expiring" },
