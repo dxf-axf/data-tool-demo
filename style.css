@@ -42,8 +42,9 @@
     font-weight: 700;
     text-anchor: middle;
     dominant-baseline: middle;
-    fill: var(--success);
-}
+    fill: var(--success, #4CAF50); /* fallback if --success isn't defined */
+  }
+  
 
 .score-label {
     font-size: 0.875rem;
