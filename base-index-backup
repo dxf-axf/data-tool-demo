@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Soley's Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="sidebar">
+    <h2>Soley's Fast Food</h2>
+    <nav>
+      <ul>
+        <li class="active" onclick="showSection('dashboard')">Dashboard</li>
+        <li onclick="showSection('staff')">Staff</li>
+        <li onclick="showSection('inventory')">Inventory</li>
+        <li onclick="showSection('sales')">Sales History</li>
+        <li onclick="showSection('chatbot')">Chatbot</li>
+        <li onclick="showSection('alerts')">Alerts</li>
+        <li onclick="showSection('settings')">Settings</li>
+      </ul>
+    </nav>
+  </div>
+  <div class="main">
+    <header><h1>Overview</h1></header>
+    <main>
+      <section id="dashboard" class="active">
+        <h2>Dashboard</h2>
+        <p>This is the dashboard section.</p>
+      </section>
+
+      <section id="staff">
+        <h2>Staff Management</h2>
+        <form id="add-staff-form">
+          <input type="text" id="staff-name" placeholder="Name" required />
+          <input type="text" id="staff-role" placeholder="Role" required />
+          <input type="date" id="staff-start" placeholder="Start Date" required />
+          <label for="staff-teams">Assign to Team(s):</label>
+          <select id="staff-teams" multiple>
+            <option value="Kitchen">Kitchen</option>
+            <option value="Front">Front of House</option>
+            <option value="Delivery">Delivery</option>
+          </select>
+          <button type="submit">Add Staff Member</button>
+        </form>
+        <div id="staff-list" class="list-container"></div>
+      </section>
+
+      <section id="inventory">
+        <h2>Inventory</h2>
+        <div id="stock-list" class="list-container"></div>
+      </section>
+
+      <section id="sales">
+        <h2>Sales History</h2>
+        <div id="sales-list" class="list-container"></div>
+      </section>
+
+      <section id="chatbot">
+        <h2>Chat Assistant</h2>
+        <div class="chat-container">
+          <div id="chat-window" class="chat-window"></div>
+          <form id="chat-form">
+            <textarea id="chat-input" placeholder="Ask a question..."></textarea>
+            <button type="submit">Send</button>
+          </form>
+        </div>
+      </section>
+
+      <section id="alerts">
+        <h2>Alerts</h2>
+        <p>This is the alerts section.</p>
+      </section>
+    </main>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

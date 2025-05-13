@@ -1,89 +1,1222 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Soley's Dashboard</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Safetrack - Soley's Fast Food Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="sidebar">
-    <h2>Soley's Fast Food</h2>
-    <nav>
-      <ul>
-        <li class="active" onclick="showSection('dashboard')">Dashboard</li>
-        <li onclick="showSection('staff')">Staff</li>
-        <li onclick="showSection('sales')">Sales</li>
-        <li onclick="showSection('stock')">Inventory</li>
-        <li onclick="showSection('alerts')">Alerts</li>
-        <li onclick="showSection('chatbot')">Chatbot</li>
-      </ul>
-    </nav>
-  </div>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="logo">
+                <h2>Safetrack</h2>
+                <p>for Soley's Fast Food</p>
+            </div>
+            <ul class="nav-menu">
+                <li class="active" data-target="dashboard"><i class="fas fa-home"></i> Dashboard</li>
+                <li data-target="sales"><i class="fas fa-chart-line"></i> Sales</li>
+                <li data-target="inventory"><i class="fas fa-boxes"></i> Inventory</li>
+                <li data-target="staff"><i class="fas fa-users"></i> Staff</li>
+                <li data-target="compliance"><i class="fas fa-clipboard-check"></i> Compliance</li>
+                <li data-target="chatbot"><i class="fas fa-robot"></i> Insights Bot</li>
+                <li data-target="settings"><i class="fas fa-cog"></i> Settings</li>
+            </ul>
+            <div class="user-info">
+                <div class="user-avatar">
+                    <img src="/api/placeholder/40/40" alt="User Avatar">
+                </div>
+                <div class="user-details">
+                    <p class="user-name">Manager</p>
+                    <p class="user-role">Admin</p>
+                </div>
+            </div>
+        </nav>
 
-  <div class="main">
-    <header><h1>Compliance Monitoring</h1></header>
-    <main>
-      <!-- Dashboard -->
-      <section id="dashboard" class="active">
-        <h2>Dashboard</h2>
-        <p>This is the dashboard section.</p>
-      </section>
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Header with Search and Notifications -->
+            <header class="header">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search...">
+                </div>
+                <div class="header-actions">
+                    <div class="notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </div>
+                    <div class="date-display">
+                        <span id="current-date">May 4, 2025</span>
+                    </div>
+                </div>
+            </header>
 
-      <!-- Staff -->
-      <section id="staff">
-        <h2>Staff Management</h2>
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="content-section active">
+                <h1>Dashboard Overview</h1>
+                
+                <div class="summary-cards">
+                    <div class="card">
+                        <div class="card-content">
+                            <h3>Today's Sales</h3>
+                            <p class="metric">$1,245.80</p>
+                            <p class="trend positive"><i class="fas fa-arrow-up"></i> +5.2% from yesterday</p>
+                        </div>
+                        <div class="card-icon sales-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                    </div>
 
-        <!-- Add New Staff Member Form -->
-        <form id="add-staff-form">
-          <input type="text" id="staff-name" placeholder="Name" required />
-          <input type="text" id="staff-role" placeholder="Role" required />
-          <input type="date" id="staff-start" placeholder="Start Date" required />
-          <label for="staff-teams">Assign to Team(s):</label>
-          <select id="staff-teams" multiple>
-            <option value="Kitchen">Kitchen</option>
-            <option value="Front">Front of House</option>
-            <option value="Delivery">Delivery</option>
-          </select>
-          <button type="submit">Add Staff Member</button>
-        </form>
+                    <div class="card">
+                        <div class="card-content">
+                            <h3>Weekly Sales</h3>
+                            <p class="metric">$8,762.45</p>
+                            <p class="trend positive"><i class="fas fa-arrow-up"></i> +3.7% from last week</p>
+                        </div>
+                        <div class="card-icon weekly-icon">
+                            <i class="fas fa-calendar-week"></i>
+                        </div>
+                    </div>
 
-        <!-- Staff List Display -->
-        <div id="staff-list" class="list-container"></div>
-      </section>
+                    <div class="card">
+                        <div class="card-content">
+                            <h3>Monthly Sales</h3>
+                            <p class="metric">$36,295.12</p>
+                            <p class="trend positive"><i class="fas fa-arrow-up"></i> +8.1% from last month</p>
+                        </div>
+                        <div class="card-icon monthly-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                    </div>
 
-      <!-- Sales -->
-      <section id="sales">
-        <h2>Sales</h2>
-        <p>This is the sales section.</p>
-      </section>
+                    <div class="card warning">
+                        <div class="card-content">
+                            <h3>Low Stock Items</h3>
+                            <p class="metric">4 Items</p>
+                            <p class="subtext">Action required</p>
+                        </div>
+                        <div class="card-icon inventory-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                    </div>
+                </div>
 
-      <!-- Inventory -->
-      <section id="stock">
-        <h2>Inventory</h2>
-        <p>This is the inventory section.</p>
-      </section>
+                <div class="dashboard-row">
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h2>Sales Trend</h2>
+                            <div class="chart-filters">
+                                <button class="active">Week</button>
+                                <button>Month</button>
+                                <button>Year</button>
+                            </div>
+                        </div>
+                        <div class="chart" id="sales-chart">
+                            <!-- Chart will be rendered here by JS -->
+                        </div>
+                    </div>
 
-      <!-- Alerts -->
-      <section id="alerts">
-        <h2>Alerts</h2>
-        <p>This is the alerts section.</p>
-      </section>
+                    <div class="alerts-container">
+                        <div class="alerts-header">
+                            <h2>Alerts & Notifications</h2>
+                            <button class="view-all">View All</button>
+                        </div>
+                        <div class="alerts-list">
+                            <div class="alert-item critical">
+                                <div class="alert-icon"><i class="fas fa-exclamation-circle"></i></div>
+                                <div class="alert-content">
+                                    <h4>Certification Expiring</h4>
+                                    <p>John Doe's Food Safety Certification expires in 7 days</p>
+                                    <span class="timestamp">1 hour ago</span>
+                                </div>
+                            </div>
+                            <div class="alert-item warning">
+                                <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                                <div class="alert-content">
+                                    <h4>Low Stock Alert</h4>
+                                    <p>Burger buns are running low (15% remaining)</p>
+                                    <span class="timestamp">3 hours ago</span>
+                                </div>
+                            </div>
+                            <div class="alert-item info">
+                                <div class="alert-icon"><i class="fas fa-info-circle"></i></div>
+                                <div class="alert-content">
+                                    <h4>New Staff Member</h4>
+                                    <p>Sarah Johnson has been added to the system</p>
+                                    <span class="timestamp">Yesterday</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-      <!-- Chatbot -->
-      <section id="chatbot">
-        <h2>Chatbot</h2>
-        <div class="chat-container">
-          <div id="chat-window" class="chat-window"></div>
-          <form id="chat-form">
-            <textarea id="chat-input" placeholder="Ask a question..."></textarea>
-            <button type="submit">Send</button>
-          </form>
-        </div>
-      </section>
-    </main>
-  </div>
+                <div class="dashboard-row">
+                    <div class="popular-items">
+                        <h2>Best Selling Items</h2>
+                        <div class="items-list">
+                            <div class="item">
+                                <span class="item-rank">1</span>
+                                <span class="item-name">Double Cheeseburger</span>
+                                <div class="item-sales">
+                                    <div class="progress-bar">
+                                        <div class="progress" style="width: 85%"></div>
+                                    </div>
+                                    <span class="sales-count">432 sold</span>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <span class="item-rank">2</span>
+                                <span class="item-name">Loaded Fries</span>
+                                <div class="item-sales">
+                                    <div class="progress-bar">
+                                        <div class="progress" style="width: 72%"></div>
+                                    </div>
+                                    <span class="sales-count">367 sold</span>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <span class="item-rank">3</span>
+                                <span class="item-name">Chocolate Shake</span>
+                                <div class="item-sales">
+                                    <div class="progress-bar">
+                                        <div class="progress" style="width: 65%"></div>
+                                    </div>
+                                    <span class="sales-count">298 sold</span>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <span class="item-rank">4</span>
+                                <span class="item-name">Pepperoni Pizza</span>
+                                <div class="item-sales">
+                                    <div class="progress-bar">
+                                        <div class="progress" style="width: 59%"></div>
+                                    </div>
+                                    <span class="sales-count">278 sold</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-  <script src="script.js"></script>
+                    <div class="staff-overview">
+                        <h2>Staff Overview</h2>
+                        <div class="staff-stats">
+                            <div class="stat-card">
+                                <h4>On Duty</h4>
+                                <p>7</p>
+                            </div>
+                            <div class="stat-card">
+                                <h4>Total Staff</h4>
+                                <p>14</p>
+                            </div>
+                            <div class="stat-card warning">
+                                <h4>Expiring Certs</h4>
+                                <p>2</p>
+                            </div>
+                        </div>
+                        <h3>Today's Schedule</h3>
+                        <div class="schedule-list">
+                            <div class="schedule-item">
+                                <span class="time">6:00 AM - 2:00 PM</span>
+                                <span class="staff-names">John, Sarah, Miguel</span>
+                            </div>
+                            <div class="schedule-item">
+                                <span class="time">2:00 PM - 10:00 PM</span>
+                                <span class="staff-names">Lisa, Alex, David, Emma</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sales Section -->
+            <section id="sales" class="content-section">
+                <h1>Sales Analytics</h1>
+                <div class="filter-row">
+                    <div class="date-filter">
+                        <label>Date Range:</label>
+                        <select id="sales-period">
+                            <option value="today">Today</option>
+                            <option value="week">Last 7 Days</option>
+                            <option value="month" selected>Last 30 Days</option>
+                            <option value="quarter">Last 90 Days</option>
+                            <option value="year">Last 12 Months</option>
+                            <option value="custom">Custom Range</option>
+                        </select>
+                    </div>
+                    <div class="export-actions">
+                        <button class="btn-export"><i class="fas fa-download"></i> Export Data</button>
+                        <button class="btn-print"><i class="fas fa-print"></i> Print Report</button>
+                    </div>
+                </div>
+
+                <div class="sales-summary">
+                    <div class="summary-box">
+                        <h3>Total Revenue</h3>
+                        <p class="big-number">$36,295.12</p>
+                        <p class="comparison">vs $33,570.45 last period</p>
+                    </div>
+                    <div class="summary-box">
+                        <h3>Total Orders</h3>
+                        <p class="big-number">3,642</p>
+                        <p class="comparison">vs 3,417 last period</p>
+                    </div>
+                    <div class="summary-box">
+                        <h3>Average Order</h3>
+                        <p class="big-number">$9.97</p>
+                        <p class="comparison">vs $9.82 last period</p>
+                    </div>
+                    <div class="summary-box">
+                        <h3>Peak Hour</h3>
+                        <p class="big-number">12:00 - 13:00</p>
+                        <p class="comparison">$457.32 avg. revenue</p>
+                    </div>
+                </div>
+
+                <div class="chart-container full-width">
+                    <div class="chart-header">
+                        <h2>Revenue Over Time</h2>
+                        <div class="chart-type-selector">
+                            <button class="active"><i class="fas fa-chart-line"></i></button>
+                            <button><i class="fas fa-chart-bar"></i></button>
+                        </div>
+                    </div>
+                    <div class="chart" id="revenue-chart">
+                        <!-- Chart will be rendered here by JS -->
+                    </div>
+                </div>
+
+                <div class="sales-details-row">
+                    <div class="sales-by-category">
+                        <h2>Sales by Category</h2>
+                        <div class="chart" id="category-chart">
+                            <!-- Chart will be rendered here by JS -->
+                        </div>
+                        <div class="category-legend">
+                            <div class="legend-item">
+                                <span class="color-box burgers"></span>
+                                <span class="category-name">Burgers</span>
+                                <span class="category-value">$12,458.25</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="color-box fries"></span>
+                                <span class="category-name">Fries</span>
+                                <span class="category-value">$7,259.02</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="color-box shakes"></span>
+                                <span class="category-name">Shakes</span>
+                                <span class="category-value">$5,444.27</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="color-box pizza"></span>
+                                <span class="category-name">Pizza</span>
+                                <span class="category-value">$4,718.36</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="color-box other"></span>
+                                <span class="category-name">Other</span>
+                                <span class="category-value">$6,415.22</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="top-selling-items">
+                        <h2>Top Selling Items</h2>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Category</th>
+                                    <th>Quantity</th>
+                                    <th>Revenue</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Double Cheeseburger</td>
+                                    <td>Burgers</td>
+                                    <td>1,254</td>
+                                    <td>$6,270.00</td>
+                                </tr>
+                                <tr>
+                                    <td>Loaded Fries</td>
+                                    <td>Fries</td>
+                                    <td>987</td>
+                                    <td>$3,948.00</td>
+                                </tr>
+                                <tr>
+                                    <td>Chocolate Shake</td>
+                                    <td>Shakes</td>
+                                    <td>876</td>
+                                    <td>$3,504.00</td>
+                                </tr>
+                                <tr>
+                                    <td>Pepperoni Pizza</td>
+                                    <td>Pizza</td>
+                                    <td>743</td>
+                                    <td>$3,715.00</td>
+                                </tr>
+                                <tr>
+                                    <td>Chicken Burger</td>
+                                    <td>Burgers</td>
+                                    <td>698</td>
+                                    <td>$3,490.00</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Inventory Section -->
+            <section id="inventory" class="content-section">
+                <h1>Inventory Management</h1>
+                
+                <div class="filter-row">
+                    <div class="search-filter">
+                        <input type="text" placeholder="Search inventory...">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div class="category-filter">
+                        <label>Category:</label>
+                        <select>
+                            <option value="all">All Categories</option>
+                            <option value="ingredients">Ingredients</option>
+                            <option value="packaging">Packaging</option>
+                            <option value="beverages">Beverages</option>
+                            <option value="supplies">Supplies</option>
+                        </select>
+                    </div>
+                    <div class="stock-filter">
+                        <label>Filter:</label>
+                        <select>
+                            <option value="all">All Items</option>
+                            <option value="low">Low Stock</option>
+                            <option value="out">Out of Stock</option>
+                            <option value="surplus">Surplus</option>
+                        </select>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn-primary"><i class="fas fa-plus"></i> Add Item</button>
+                        <button class="btn-secondary"><i class="fas fa-file-export"></i> Export</button>
+                    </div>
+                </div>
+
+                <div class="inventory-summary">
+                    <div class="summary-box">
+                        <h3>Total Items</h3>
+                        <p class="big-number">124</p>
+                    </div>
+                    <div class="summary-box warning">
+                        <h3>Low Stock</h3>
+                        <p class="big-number">4</p>
+                    </div>
+                    <div class="summary-box danger">
+                        <h3>Out of Stock</h3>
+                        <p class="big-number">1</p>
+                    </div>
+                    <div class="summary-box info">
+                        <h3>Incoming Orders</h3>
+                        <p class="big-number">2</p>
+                    </div>
+                </div>
+
+                <div class="inventory-alerts">
+                    <h2>Inventory Alerts</h2>
+                    <div class="alerts-list">
+                        <div class="alert-item danger">
+                            <div class="alert-icon"><i class="fas fa-times-circle"></i></div>
+                            <div class="alert-content">
+                                <h4>Out of Stock</h4>
+                                <p>Vegetarian patties - Reorder immediately</p>
+                            </div>
+                            <div class="alert-action">
+                                <button>Order Now</button>
+                            </div>
+                        </div>
+                        <div class="alert-item warning">
+                            <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                            <div class="alert-content">
+                                <h4>Low Stock (15%)</h4>
+                                <p>Burger buns - Will last approximately 2 days</p>
+                            </div>
+                            <div class="alert-action">
+                                <button>Order Now</button>
+                            </div>
+                        </div>
+                        <div class="alert-item warning">
+                            <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                            <div class="alert-content">
+                                <h4>Low Stock (20%)</h4>
+                                <p>Cheese slices - Will last approximately 3 days</p>
+                            </div>
+                            <div class="alert-action">
+                                <button>Order Now</button>
+                            </div>
+                        </div>
+                        <div class="alert-item warning">
+                            <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                            <div class="alert-content">
+                                <h4>Low Stock (25%)</h4>
+                                <p>Soda cups - Will last approximately 4 days</p>
+                            </div>
+                            <div class="alert-action">
+                                <button>Order Now</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="inventory-table-container">
+                    <h2>Inventory List</h2>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Item Name</th>
+                                <th>Category</th>
+                                <th>Current Stock</th>
+                                <th>Minimum Stock</th>
+                                <th>Status</th>
+                                <th>Last Updated</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Beef Patties</td>
+                                <td>Ingredients</td>
+                                <td>145 units</td>
+                                <td>50 units</td>
+                                <td><span class="status-badge success">Good</span></td>
+                                <td>Today, 10:23 AM</td>
+                                <td>
+                                    <button class="btn-icon"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-icon"><i class="fas fa-id-card"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Lisa Smith</td>
+                                <td>Server</td>
+                                <td>555-567-8901</td>
+                                <td><span class="status-badge info">On Leave</span></td>
+                                <td><span class="cert-badge success">Valid (7 months)</span></td>
+                                <td><span class="cert-badge success">Valid (7 months)</span></td>
+                                <td>
+                                    <button class="btn-icon"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-icon"><i class="fas fa-id-card"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="schedule-container">
+                    <h2>Weekly Schedule</h2>
+                    <div class="schedule-controls">
+                        <button class="btn-secondary"><i class="fas fa-chevron-left"></i></button>
+                        <h3>May 4 - May 10, 2025</h3>
+                        <button class="btn-secondary"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <div class="schedule-table-container">
+                        <table class="schedule-table">
+                            <thead>
+                                <tr>
+                                    <th>Staff</th>
+                                    <th>Monday</th>
+                                    <th>Tuesday</th>
+                                    <th>Wednesday</th>
+                                    <th>Thursday</th>
+                                    <th>Friday</th>
+                                    <th>Saturday</th>
+                                    <th>Sunday</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>John Doe</td>
+                                    <td class="shift morning">6AM-2PM</td>
+                                    <td class="shift morning">6AM-2PM</td>
+                                    <td class="shift morning">6AM-2PM</td>
+                                    <td class="shift morning">6AM-2PM</td>
+                                    <td class="shift morning">6AM-2PM</td>
+                                    <td class="no-shift">Off</td>
+                                    <td class="no-shift">Off</td>
+                                </tr>
+                                <tr>
+                                    <td>Sarah Johnson</td>
+                                    <td class="shift morning">6AM-2PM</td>
+                                    <td class="shift morning">6AM-2PM</td>
+                                    <td class="no-shift">Off</td>
+                                    <td class="no-shift">Off</td>
+                                    <td class="shift morning">6AM-2PM</td>
+                                    <td class="shift morning">6AM-2PM</td>
+                                    <td class="shift morning">6AM-2PM</td>
+                                </tr>
+                                <tr>
+                                    <td>Maria Garcia</td>
+                                    <td class="no-shift">Off</td>
+                                    <td class="no-shift">Off</td>
+                                    <td class="shift evening">2PM-10PM</td>
+                                    <td class="shift evening">2PM-10PM</td>
+                                    <td class="shift evening">2PM-10PM</td>
+                                    <td class="shift evening">2PM-10PM</td>
+                                    <td class="shift evening">2PM-10PM</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Compliance Section -->
+            <section id="compliance" class="content-section">
+                <h1>Health & Safety Compliance</h1>
+                
+                <div class="filter-row">
+                    <div class="search-filter">
+                        <input type="text" placeholder="Search documents...">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div class="doc-type-filter">
+                        <label>Type:</label>
+                        <select>
+                            <option value="all">All Documents</option>
+                            <option value="certifications">Staff Certifications</option>
+                            <option value="inspections">Health Inspections</option>
+                            <option value="policies">Policies & Procedures</option>
+                            <option value="training">Training Records</option>
+                        </select>
+                    </div>
+                    <div class="status-filter">
+                        <label>Status:</label>
+                        <select>
+                            <option value="all">All Status</option>
+                            <option value="valid">Valid</option>
+                            <option value="expiring">Expiring Soon</option>
+                            <option value="expired">Expired</option>
+                        </select>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn-primary"><i class="fas fa-plus"></i> Add Document</button>
+                        <button class="btn-secondary"><i class="fas fa-file-export"></i> Export</button>
+                    </div>
+                </div>
+
+                <div class="compliance-summary">
+                    <div class="summary-box success">
+                        <h3>Overall Compliance</h3>
+                        <p class="big-number">96%</p>
+                        <p class="comparison">vs 92% last month</p>
+                    </div>
+                    <div class="summary-box">
+                        <h3>Total Documents</h3>
+                        <p class="big-number">35</p>
+                    </div>
+                    <div class="summary-box warning">
+                        <h3>Expiring Soon</h3>
+                        <p class="big-number">3</p>
+                    </div>
+                    <div class="summary-box danger">
+                        <h3>Action Required</h3>
+                        <p class="big-number">1</p>
+                    </div>
+                </div>
+
+                <div class="compliance-alerts">
+                    <h2>Compliance Alerts</h2>
+                    <div class="alerts-list">
+                        <div class="alert-item critical">
+                            <div class="alert-icon"><i class="fas fa-exclamation-circle"></i></div>
+                            <div class="alert-content">
+                                <h4>Staff Certification Expiring</h4>
+                                <p>John Doe's Food Safety Certification expires in 7 days</p>
+                            </div>
+                            <div class="alert-action">
+                                <button>Send Reminder</button>
+                            </div>
+                        </div>
+                        <div class="alert-item warning">
+                            <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                            <div class="alert-content">
+                                <h4>Staff Certification Expiring</h4>
+                                <p>Maria Garcia's Food Handler Card expires in 14 days</p>
+                            </div>
+                            <div class="alert-action">
+                                <button>Send Reminder</button>
+                            </div>
+                        </div>
+                        <div class="alert-item warning">
+                            <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                            <div class="alert-content">
+                                <h4>Health Inspection Due</h4>
+                                <p>Quarterly health inspection due in 15 days</p>
+                            </div>
+                            <div class="alert-action">
+                                <button>Schedule</button>
+                            </div>
+                        </div>
+                        <div class="alert-item danger">
+                            <div class="alert-icon"><i class="fas fa-times-circle"></i></div>
+                            <div class="alert-content">
+                                <h4>Fire Safety Inspection</h4>
+                                <p>Annual fire safety inspection is overdue by 5 days</p>
+                            </div>
+                            <div class="alert-action">
+                                <button>Schedule Now</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tabs-container">
+                    <div class="tabs">
+                        <div class="tab active" data-tab="staff-certs">Staff Certifications</div>
+                        <div class="tab" data-tab="inspections">Inspections</div>
+                        <div class="tab" data-tab="training">Training Records</div>
+                        <div class="tab" data-tab="policies">Policies & Procedures</div>
+                    </div>
+                    
+                    <div class="tab-content active" id="staff-certs">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Staff Member</th>
+                                    <th>Certification Type</th>
+                                    <th>Issue Date</th>
+                                    <th>Expiry Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>John Doe</td>
+                                    <td>Food Safety Certification</td>
+                                    <td>May 11, 2024</td>
+                                    <td>May 11, 2025</td>
+                                    <td><span class="status-badge warning">Expires in 7 days</span></td>
+                                    <td>
+                                        <button class="btn-icon"><i class="fas fa-eye"></i></button>
+                                        <button class="btn-icon"><i class="fas fa-bell"></i></button>
+                                        <button class="btn-icon"><i class="fas fa-download"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>John Doe</td>
+                                    <td>Food Handler Card</td>
+                                    <td>Mar 5, 2025</td>
+                                    <td>Mar 5, 2026</td>
+                                    <td><span class="status-badge success">Valid (10 months)</span></td>
+                                    <td>
+                                        <button class="btn-icon"><i class="fas fa-eye"></i></button>
+                                        <button class="btn-icon"><i class="fas fa-bell"></i></button>
+                                        <button class="btn-icon"><i class="fas fa-download"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Maria Garcia</td>
+                                    <td>Food Safety Certification</td>
+                                    <td>Oct 15, 2024</td>
+                                    <td>Oct 15, 2025</td>
+                                    <td><span class="status-badge success">Valid (5 months)</span></td>
+                                    <td>
+                                        <button class="btn-icon"><i class="fas fa-eye"></i></button>
+                                        <button class="btn-icon"><i class="fas fa-bell"></i></button>
+                                        <button class="btn-icon"><i class="fas fa-download"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Maria Garcia</td>
+                                    <td>Food Handler Card</td>
+                                    <td>May 18, 2024</td>
+                                    <td>May 18, 2025</td>
+                                    <td><span class="status-badge warning">Expires in 14 days</span></td>
+                                    <td>
+                                        <button class="btn-icon"><i class="fas fa-eye"></i></button>
+                                        <button class="btn-icon"><i class="fas fa-bell"></i></button>
+                                        <button class="btn-icon"><i class="fas fa-download"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="tab-content" id="inspections">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Inspection Type</th>
+                                    <th>Last Inspection</th>
+                                    <th>Next Due</th>
+                                    <th>Frequency</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Health Department Inspection</td>
+                                    <td>Feb 19, 2025</td>
+                                    <td>May 19, 2025</td>
+                                    <td>Quarterly</td>
+                                    <td><span class="status-badge warning">Due in 15 days</span></td>
+                                    <td>
+                                        <button class="btn-icon"><i class="fas fa-eye"></i></button>
+                                        <button class="btn-icon"><i class="fas fa-calendar-plus"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Fire Safety Inspection</td>
+                                    <td>Apr 29, 2024</td>
+                                    <td>Apr 29, 2025</td>
+                                    <td>Annual</td>
+                                    <td><span class="status-badge danger">Overdue by 5 days</span></td>
+                                    <td>
+                                        <button class="btn-icon"><i class="fas fa-eye"></i></button>
+                                        <button class="btn-icon"><i class="fas fa-calendar-plus"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Equipment Safety Check</td>
+                                    <td>Mar 10, 2025</td>
+                                    <td>Jun 10, 2025</td>
+                                    <td>Quarterly</td>
+                                    <td><span class="status-badge success">Due in 37 days</span></td>
+                                    <td>
+                                        <button class="btn-icon"><i class="fas fa-eye"></i></button>
+                                        <button class="btn-icon"><i class="fas fa-calendar-plus"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="tab-content" id="training">
+                        <!-- Training Records Content -->
+                        <p>Staff training records content will appear here.</p>
+                    </div>
+                    
+                    <div class="tab-content" id="policies">
+                        <!-- Policies Content -->
+                        <p>Restaurant policies and procedures content will appear here.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Chatbot Section -->
+            <section id="chatbot" class="content-section">
+                <h1>Insights Bot</h1>
+                
+                <div class="chatbot-container">
+                    <div class="chatbot-suggestions">
+                        <h3>Quick Questions</h3>
+                        <div class="suggestion-buttons">
+                            <button class="suggestion-btn">What were our best selling items this month?</button>
+                            <button class="suggestion-btn">When is our busiest day of the week?</button>
+                            <button class="suggestion-btn">How much inventory will we need next week?</button>
+                            <button class="suggestion-btn">Which staff certifications expire this month?</button>
+                            <button class="suggestion-btn">What was our revenue compared to last month?</button>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-window">
+                        <div class="chat-messages">
+                            <div class="message bot">
+                                <div class="message-content">
+                                    <p>Hello! I'm your Safetrack Insights Bot. What would you like to know about your restaurant data?</p>
+                                </div>
+                                <div class="message-time">10:15 AM</div>
+                            </div>
+                            
+                            <div class="message user">
+                                <div class="message-content">
+                                    <p>What were our top 3 selling items last week?</p>
+                                </div>
+                                <div class="message-time">10:16 AM</div>
+                            </div>
+                            
+                            <div class="message bot">
+                                <div class="message-content">
+                                    <p>Based on sales data from Apr 27 - May 3, your top 3 selling items were:</p>
+                                    <ol>
+                                        <li>Double Cheeseburger - 128 units ($640.00)</li>
+                                        <li>Loaded Fries - 97 units ($388.00)</li>
+                                        <li>Chocolate Shake - 89 units ($356.00)</li>
+                                    </ol>
+                                    <p>Would you like to see a full breakdown of all menu items?</p>
+                                </div>
+                                <div class="message-time">10:16 AM</div>
+                            </div>
+                        </div>
+                        
+                        <div class="chat-input">
+                            <input type="text" placeholder="Ask about your data...">
+                            <button><i class="fas fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+                    
+                    <div class="chatbot-data-display">
+                        <div class="data-visualization">
+                            <h3>Top Selling Items - Past Week</h3>
+                            <div class="chart" id="chat-results-chart">
+                                <!-- Chart will be rendered here by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section id="settings" class="content-section">
+                <h1>Settings</h1>
+                
+                <div class="settings-container">
+                    <div class="settings-sidebar">
+                        <ul class="settings-menu">
+                            <li class="active">General Settings</li>
+                            <li>User Profile</li>
+                            <li>Notifications</li>
+                            <li>Integrations</li>
+                            <li>API & Developer</li>
+                            <li>Billing & Subscription</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="settings-content">
+                        <div class="settings-section">
+                            <h2>General Settings</h2>
+                            
+                            <div class="settings-group">
+                                <h3>Restaurant Information</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Restaurant Name</label>
+                                        <input type="text" value="Soley's Fast Food">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Phone Number</label>
+                                        <input type="text" value="555-123-4567">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group full-width">
+                                        <label>Address</label>
+                                        <input type="text" value="123 Main Street, Anytown, ST 12345">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Business Hours</label>
+                                        <input type="text" value="6:00 AM - 10:00 PM">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Time Zone</label>
+                                        <select>
+                                            <option selected>Eastern Time (ET)</option>
+                                            <option>Central Time (CT)</option>
+                                            <option>Mountain Time (MT)</option>
+                                            <option>Pacific Time (PT)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="settings-group">
+                                <h3>Display Settings</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Theme</label>
+                                        <select>
+                                            <option selected>Light</option>
+                                            <option>Dark</option>
+                                            <option>System Default</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Dashboard Layout</label>
+                                        <select>
+                                            <option selected>Standard</option>
+                                            <option>Compact</option>
+                                            <option>Expanded</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Default Date Range</label>
+                                        <select>
+                                            <option>Today</option>
+                                            <option selected>Last 7 Days</option>
+                                            <option>Last 30 Days</option>
+                                            <option>Custom</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Currency Format</label>
+                                        <select>
+                                            <option selected>USD ($)</option>
+                                            <option>EUR (€)</option>
+                                            <option>GBP (£)</option>
+                                            <option>CAD ($)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="settings-group">
+                                <h3>Alert Thresholds</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Low Stock Warning (%)</label>
+                                        <input type="number" value="25">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Critical Stock Warning (%)</label>
+                                        <input type="number" value="10">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Staff Certification Alert (days before)</label>
+                                        <input type="number" value="30">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Inspection Alert (days before)</label>
+                                        <input type="number" value="14">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="settings-actions">
+                                <button class="btn-primary">Save Changes</button>
+                                <button class="btn-secondary">Reset to Default</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chart.js/3.7.0/chart.min.js"></script>
+    <script src="script.js"></script>
 </body>
-</html>
+</html> class="fas fa-edit"></i></button>
+                                    <button class="btn-icon"><i class="fas fa-id-card"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Maria Garcia</td>
+                                <td>Chef</td>
+                                <td>555-345-6789</td>
+                                <td><span class="status-badge success">Active</span></td>
+                                <td><span class="cert-badge success">Valid (5 months)</span></td>
+                                <td><span class="cert-badge warning">Expires in 14 days</span></td>
+                                <td>
+                                    <button class="btn-icon"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-icon"><i class="fas fa-id-card"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Miguel Rodriguez</td>
+                                <td>Cashier</td>
+                                <td>555-456-7890</td>
+                                <td><span class="status-badge success">Active</span></td>
+                                <td><span class="cert-badge success">Valid (9 months)</span></td>
+                                <td><span class="cert-badge success">Valid (11 months)</span></td>
+                                <td>
+                                    <button class="btn-icon"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-icon"><i class="fas fa-history"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Burger Buns</td>
+                                <td>Ingredients</td>
+                                <td>35 packs</td>
+                                <td>30 packs</td>
+                                <td><span class="status-badge warning">Low</span></td>
+                                <td>Today, 09:15 AM</td>
+                                <td>
+                                    <button class="btn-icon"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-icon"><i class="fas fa-history"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Cheese Slices</td>
+                                <td>Ingredients</td>
+                                <td>40 packs</td>
+                                <td>25 packs</td>
+                                <td><span class="status-badge warning">Low</span></td>
+                                <td>Yesterday, 5:45 PM</td>
+                                <td>
+                                    <button class="btn-icon"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-icon"><i class="fas fa-history"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>French Fries</td>
+                                <td>Ingredients</td>
+                                <td>87 bags</td>
+                                <td>40 bags</td>
+                                <td><span class="status-badge success">Good</span></td>
+                                <td>Yesterday, 4:30 PM</td>
+                                <td>
+                                    <button class="btn-icon"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-icon"><i class="fas fa-history"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Vegetarian Patties</td>
+                                <td>Ingredients</td>
+                                <td>0 units</td>
+                                <td>20 units</td>
+                                <td><span class="status-badge danger">Out</span></td>
+                                <td>Yesterday, 2:10 PM</td>
+                                <td>
+                                    <button class="btn-icon"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-icon"><i class="fas fa-history"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Soda Cups</td>
+                                <td>Packaging</td>
+                                <td>125 units</td>
+                                <td>100 units</td>
+                                <td><span class="status-badge warning">Low</span></td>
+                                <td>May 2, 2025</td>
+                                <td>
+                                    <button class="btn-icon"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-icon"><i class="fas fa-history"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="forecast-container">
+                    <h2>Inventory Forecast</h2>
+                    <p class="subtext">Based on past 30 days of sales data</p>
+                    <div class="chart" id="forecast-chart">
+                        <!-- Chart will be rendered here by JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Staff Section -->
+            <section id="staff" class="content-section">
+                <h1>Staff Management</h1>
+                
+                <div class="filter-row">
+                    <div class="search-filter">
+                        <input type="text" placeholder="Search staff...">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div class="role-filter">
+                        <label>Role:</label>
+                        <select>
+                            <option value="all">All Roles</option>
+                            <option value="manager">Manager</option>
+                            <option value="chef">Chef</option>
+                            <option value="server">Server</option>
+                            <option value="cashier">Cashier</option>
+                        </select>
+                    </div>
+                    <div class="status-filter">
+                        <label>Status:</label>
+                        <select>
+                            <option value="all">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="onleave">On Leave</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn-primary"><i class="fas fa-user-plus"></i> Add Staff</button>
+                        <button class="btn-secondary"><i class="fas fa-calendar-alt"></i> Schedule</button>
+                    </div>
+                </div>
+
+                <div class="staff-summary">
+                    <div class="summary-box">
+                        <h3>Total Staff</h3>
+                        <p class="big-number">14</p>
+                    </div>
+                    <div class="summary-box">
+                        <h3>On Duty Today</h3>
+                        <p class="big-number">7</p>
+                    </div>
+                    <div class="summary-box warning">
+                        <h3>Certifications Due</h3>
+                        <p class="big-number">2</p>
+                    </div>
+                    <div class="summary-box info">
+                        <h3>On Leave</h3>
+                        <p class="big-number">1</p>
+                    </div>
+                </div>
+
+                <div class="certification-alerts">
+                    <h2>Certification Alerts</h2>
+                    <div class="alerts-list">
+                        <div class="alert-item critical">
+                            <div class="alert-icon"><i class="fas fa-exclamation-circle"></i></div>
+                            <div class="alert-content">
+                                <h4>Certification Expiring Soon</h4>
+                                <p>John Doe's Food Safety Certification expires in 7 days</p>
+                            </div>
+                            <div class="alert-action">
+                                <button>Send Reminder</button>
+                            </div>
+                        </div>
+                        <div class="alert-item warning">
+                            <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                            <div class="alert-content">
+                                <h4>Certification Expiring Soon</h4>
+                                <p>Maria Garcia's Food Handler Card expires in 14 days</p>
+                            </div>
+                            <div class="alert-action">
+                                <button>Send Reminder</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="staff-table-container">
+                    <h2>Staff List</h2>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Role</th>
+                                <th>Contact</th>
+                                <th>Status</th>
+                                <th>Food Safety Cert</th>
+                                <th>Handler Card</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>John Doe</td>
+                                <td>Manager</td>
+                                <td>555-123-4567</td>
+                                <td><span class="status-badge success">Active</span></td>
+                                <td><span class="cert-badge warning">Expires in 7 days</span></td>
+                                <td><span class="cert-badge success">Valid (10 months)</span></td>
+                                <td>
+                                    <button class="btn-icon"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-icon"><i class="fas fa-id-card"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Sarah Johnson</td>
+                                <td>Chef</td>
+                                <td>555-234-5678</td>
+                                <td><span class="status-badge success">Active</span></td>
+                                <td><span class="cert-badge success">Valid (6 months)</span></td>
+                                <td><span class="cert-badge success">Valid (8 months)</span></td>
+                                <td>
+                                    <button class="btn-icon"><i
