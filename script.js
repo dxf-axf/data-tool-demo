@@ -1,622 +1,1802 @@
-document.addEventListener('DOMContentLoaded', function() {
-  // Initialize current date
-  const currentDate = new Date();
-  document.getElementById('current-date').textContent = currentDate.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
-  });
-
-  // Navigation functionality
-  const navItems = document.querySelectorAll('.nav-menu li');
-  const contentSections = document.querySelectorAll('.content-section');
-
-  navItems.forEach(item => {
-      item.addEventListener('click', function() {
-          // Update active nav item
-          navItems.forEach(nav => nav.classList.remove('active'));
-          this.classList.add('active');
-
-          // Show the corresponding content section
-          const targetId = this.getAttribute('data-target');
-          contentSections.forEach(section => {
-              section.classList.remove('active');
-              if (section.id === targetId) {
-                  section.classList.add('active');
-              }
-          });
-      });
-  });
-
-  // Tab functionality
-  const tabs = document.querySelectorAll('.tab');
-  const tabContents = document.querySelectorAll('.tab-content');
-
-  tabs.forEach(tab => {
-      tab.addEventListener('click', function() {
-          // Update active tab
-          tabs.forEach(t => t.classList.remove('active'));
-          this.classList.add('active');
-
-          // Show the corresponding tab content
-          const targetId = this.getAttribute('data-tab');
-          tabContents.forEach(content => {
-              content.classList.remove('active');
-              if (content.id === targetId) {
-                  content.classList.add('active');
-              }
-          });
-      });
-  });
-
-  // Chart.js initialization
-  initializeDashboardCharts();
-  initializeSalesCharts();
-  initializeInventoryCharts();
-  initializeChatbotCharts();
-
-  // Chatbot suggestion buttons
-  const suggestionButtons = document.querySelectorAll('.suggestion-btn');
-  const chatInput = document.querySelector('.chat-input input');
-  
-  suggestionButtons.forEach(button => {
-      button.addEventListener('click', function() {
-          const question = this.textContent;
-          chatInput.value = question;
-          // Simulating user sending the question
-          addUserMessage(question);
-          setTimeout(() => {
-              processUserQuery(question);
-          }, 500);
-      });
-  });
-
-  // Chat send functionality
-  const sendButton = document.querySelector('.chat-input button');
-  
-  sendButton.addEventListener('click', sendMessage);
-  chatInput.addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') {
-          sendMessage();
+const chartConfig = {
+  labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+  datasets: [
+    {
+      label: 'Daily Sales',
+      data: [1220, 1380, 1178, 1450, 1506, 1320, 1245],
+      borderColor: 'rgb(0, 84, 166)',
+      backgroundColor: 'rgba(0, 84, 166, 0.1)',
+      tension: 0.4,
+      fill: true
+    }
+  ],
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false
+      },
+      tooltip: {
+        mode: 'index',
+        intersect: false,
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+        padding: 10,
+        cornerRadius: 4,
+        titleFont: {
+          size: 14,
+          weight: 'bold'
+        },
+        bodyFont: {
+          size: 13
+        },
+        callbacks: {
+          label: function(context) {
+            return `Sales: ${context.raw}`;
+          }
+        }
       }
-  });
-
-  function sendMessage() {
-      const message = chatInput.value.trim();
-      if (message) {
-          addUserMessage(message);
-          chatInput.value = '';
-          // Process the message and generate a response
-          setTimeout(() => {
-              processUserQuery(message);
-          }, 500);
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          callback: function(value) {
+            return `¥${value}`;
+          }
+        }
       }
+    }
   }
+};
 
-  function addUserMessage(message) {
-      const messagesContainer = document.querySelector('.chat-messages');
-      const time = new Date().toLocaleTimeString('en-US', {
-          hour: 'numeric',
-          minute: '2-digit',
-          hour12: true
-      });
+/*
+ * Safetrack Premium – Main JavaScript
+ * Version: 1.0.0
+ * Description: Controls all interactive elements of the Safetrack Premium dashboard
+ */
 
-      const messageHTML = `
-          <div class="message user">
-              <div class="message-content">
-                  <p>${message}</p>
-              </div>
-              <div class="message-time">${time}</div>
-          </div>
-      `;
+document.addEventListener('DOMContentLoaded', function () {
+  // App State
+  const APP_STATE = {
+    isDarkMode: localStorage.getItem('safetrack_darkMode') === 'true' || false,
+    isSidebarCollapsed: localStorage.getItem('safetrack_sidebarCollapsed') === 'true' || false,
+    isSidebarOpen: true,
+    currentSection: 'dashboard',
+    charts: {}
+  };
+});
 
-      messagesContainer.innerHTML += messageHTML;
-      messagesContainer.scrollTop = messagesContainer.scrollHeight;
-  }
 
-  function addBotMessage(message) {
-      const messagesContainer = document.querySelector('.chat-messages');
-      const time = new Date().toLocaleTimeString('en-US', {
-          hour: 'numeric',
-          minute: '2-digit',
-          hour12: true
-      });
+    // Initialize Application
+    initApp();
 
-      const messageHTML = `
-          <div class="message bot">
-              <div class="message-content">
-                  ${message}
-              </div>
-              <div class="message-time">${time}</div>
-          </div>
-      `;
+    function initApp() {
+        // Initialize theme
+        setThemeMode(APP_STATE.isDarkMode);
+        
+        // Initialize sidebar state
+        setSidebarState(APP_STATE.isSidebarCollapsed);
+        
+        // Set current date
+        updateCurrentDate();
+        
+        // Initialize navigation
+        initNavigation();
+        
+        // Initialize interactive elements
+        initInteractiveElements();
+        
+        // Initialize charts
+        initCharts();
+        
+        // Show tutorial for first time visitors (after a small delay)
+        if (!localStorage.getItem('safetrack_tutorialSeen')) {
+            setTimeout(() => {
+                const tutorialOverlay = document.getElementById('tutorial-overlay');
+                if (tutorialOverlay) {
+                    tutorialOverlay.style.display = 'flex';
+                }
+            }, 1000);
+        }
+        
+        // Remove loading overlay with animation
+        setTimeout(() => {
+            const loadingOverlay = document.querySelector('.loading-overlay');
+            if (loadingOverlay) {
+                loadingOverlay.style.opacity = '0';
+                setTimeout(() => {
+                    loadingOverlay.style.display = 'none';
+                }, 500);
+            }
+        }, 500);
+    }
 
-      messagesContainer.innerHTML += messageHTML;
-      messagesContainer.scrollTop = messagesContainer.scrollHeight;
-  }
+    function updateCurrentDate() {
+        const dateElement = document.getElementById('current-date');
+        if (dateElement) {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            dateElement.textContent = now.toLocaleDateString('en-US', options);
+        }
+    }
 
-  // Process user query and generate a relevant response
-  function processUserQuery(query) {
-      query = query.toLowerCase();
-      
-      // Example responses based on common queries
-      if (query.includes('best selling') || query.includes('top selling')) {
-          const responseHTML = `
-              <p>Based on the last 30 days of sales data, your top selling items are:</p>
-              <ol>
-                  <li>Double Cheeseburger - 1,254 units ($6,270.00)</li>
-                  <li>Loaded Fries - 987 units ($3,948.00)</li>
-                  <li>Chocolate Shake - 876 units ($3,504.00)</li>
-                  <li>Pepperoni Pizza - 743 units ($3,715.00)</li>
-                  <li>Chicken Burger - 698 units ($3,490.00)</li>
-              </ol>
-              <p>Would you like to see the sales breakdown by category?</p>
-          `;
-          addBotMessage(responseHTML);
-          updateChatResultsChart('top-items');
-      } 
-      else if (query.includes('busiest day') || query.includes('peak time')) {
-          const responseHTML = `
-              <p>Based on the last 30 days of data:</p>
-              <p><strong>Busiest day:</strong> Friday (avg. $1,450 in sales)</p>
-              <p><strong>Peak hours:</strong> 12:00 PM - 1:00 PM (lunch rush) and 5:30 PM - 7:00 PM (dinner rush)</p>
-              <p>Would you like to see the hourly sales breakdown?</p>
-          `;
-          addBotMessage(responseHTML);
-          updateChatResultsChart('peak-hours');
-      }
-      else if (query.includes('inventory') || query.includes('stock')) {
-          const responseHTML = `
-              <p>Based on your current sales trends, here's the projected inventory needs for next week:</p>
-              <ul>
-                  <li>Burger patties: 350 units (current stock: 145)</li>
-                  <li>Burger buns: 40 packs (current stock: 35) - <strong>Reorder recommended</strong></li>
-                  <li>Cheese slices: 38 packs (current stock: 40)</li>
-                  <li>French fries: 65 bags (current stock: 87)</li>
-                  <li>Vegetarian patties: 25 units (current stock: 0) - <strong>Order immediately</strong></li>
-              </ul>
-              <p>Should I prepare a complete inventory forecast report?</p>
-          `;
-          addBotMessage(responseHTML);
-          updateChatResultsChart('inventory-forecast');
-      }
-      else if (query.includes('certification') || query.includes('compliance')) {
-          const responseHTML = `
-              <p>The following staff certifications expire this month:</p>
-              <ul>
-                  <li>John Doe - Food Safety Certification (expires in 7 days)</li>
-                  <li>Maria Garcia - Food Handler Card (expires in 14 days)</li>
-              </ul>
-              <p>Would you like me to send automatic reminders to these staff members?</p>
-          `;
-          addBotMessage(responseHTML);
-          updateChatResultsChart('certifications');
-      }
-      else if (query.includes('revenue') || query.includes('sales')) {
-          const responseHTML = `
-              <p>Here's your revenue comparison:</p>
-              <p><strong>Current Month:</strong> $36,295.12</p>
-              <p><strong>Previous Month:</strong> $33,570.45</p>
-              <p><strong>Change:</strong> +$2,724.67 (+8.1%)</p>
-              <p>Your best performing category was Burgers with a 12% increase in sales from the previous month.</p>
-              <p>Would you like to see the detailed revenue breakdown?</p>
-          `;
-          addBotMessage(responseHTML);
-          updateChatResultsChart('revenue-comparison');
-      }
-      else {
-          addBotMessage(`<p>I'm not sure I understand that query. Could you try rephrasing or selecting one of the suggested questions?</p>`);
-      }
-  }
+    function setThemeMode(isDark) {
+        const themeSwitch = document.getElementById('theme-switch');
+        if (isDark) {
+            document.body.classList.add('dark-mode');
+            if (themeSwitch) {
+                themeSwitch.checked = true;
+            }
+        } else {
+            document.body.classList.remove('dark-mode');
+            if (themeSwitch) {
+                themeSwitch.checked = false;
+            }
+        }
+        localStorage.setItem('safetrack_darkMode', isDark);
+        APP_STATE.isDarkMode = isDark;
+    }
 
-  // Update the chat results chart based on the query type
-  function updateChatResultsChart(chartType) {
-      const chartContainer = document.getElementById('chat-results-chart');
-      let chart;
-      
-      if (chartType === 'top-items') {
-          document.querySelector('.data-visualization h3').textContent = 'Top Selling Items - Past 30 Days';
-          
-          // Create chart data for top selling items
-          const data = {
-              labels: ['Double Cheeseburger', 'Loaded Fries', 'Chocolate Shake', 'Pepperoni Pizza', 'Chicken Burger'],
-              datasets: [{
-                  label: 'Units Sold',
-                  data: [1254, 987, 876, 743, 698],
-                  backgroundColor: '#0054a6',
-                  borderColor: '#0054a6',
-                  borderWidth: 1
-              }]
-          };
-          
-          chart = new Chart(chartContainer, {
-              type: 'bar',
-              data: data,
-              options: {
-                  indexAxis: 'y',
-                  plugins: {
-                      legend: {
-                          display: false
-                      }
-                  },
-                  scales: {
-                      x: {
-                          beginAtZero: true
-                      }
-                  }
-              }
-          });
-      }
-      else if (chartType === 'peak-hours') {
-          document.querySelector('.data-visualization h3').textContent = 'Sales by Hour - Average';
-          
-          // Create chart data for hourly sales
-          const data = {
-              labels: ['8AM', '9AM', '10AM', '11AM', '12PM', '1PM', '2PM', '3PM', '4PM', '5PM', '6PM', '7PM', '8PM', '9PM'],
-              datasets: [{
-                  label: 'Average Sales ($)',
-                  data: [85, 120, 150, 270, 450, 410, 280, 190, 210, 320, 380, 350, 240, 180],
-                  backgroundColor: '#0054a6',
-                  borderColor: '#0054a6',
-                  tension: 0.4,
-                  fill: false
-              }]
-          };
-          
-          chart = new Chart(chartContainer, {
-              type: 'line',
-              data: data,
-              options: {
-                  plugins: {
-                      legend: {
-                          display: false
-                      }
-                  },
-                  scales: {
-                      y: {
-                          beginAtZero: true
-                      }
-                  }
-              }
-          });
-      }
-      else if (chartType === 'inventory-forecast') {
-          document.querySelector('.data-visualization h3').textContent = 'Inventory Forecast - Next 7 Days';
-          
-          // Create chart data for inventory forecast
-          const data = {
-              labels: ['Burger Patties', 'Burger Buns', 'Cheese Slices', 'French Fries', 'Vegetarian Patties'],
-              datasets: [
-                  {
-                      label: 'Current Stock',
-                      data: [145, 35, 40, 87, 0],
-                      backgroundColor: '#6c757d'
-                  },
-                  {
-                      label: 'Needed Stock',
-                      data: [350, 40, 38, 65, 25],
-                      backgroundColor: '#0054a6'
-                  }
-              ]
-          };
-          
-          chart = new Chart(chartContainer, {
-              type: 'bar',
-              data: data,
-              options: {
-                  plugins: {
-                      legend: {
-                          position: 'top'
-                      }
-                  },
-                  scales: {
-                      y: {
-                          beginAtZero: true
-                      }
-                  }
-              }
-          });
-      }
-      else if (chartType === 'certifications') {
-          document.querySelector('.data-visualization h3').textContent = 'Staff Certifications Status';
-          
-          // Create chart data for certification status
-          const data = {
-              labels: ['Valid', 'Expiring Soon', 'Expired'],
-              datasets: [{
-                  data: [26, 2, 0],
-                  backgroundColor: ['#28a745', '#ffc107', '#dc3545']
-              }]
-          };
-          
-          chart = new Chart(chartContainer, {
-              type: 'doughnut',
-              data: data,
-              options: {
-                  responsive: true,
-                  plugins: {
-                      legend: {
-                          position: 'right'
-                      }
-                  }
-              }
-          });
-      }
-      else if (chartType === 'revenue-comparison') {
-          document.querySelector('.data-visualization h3').textContent = 'Monthly Revenue Comparison';
-          
-          // Create chart data for revenue comparison
-          const data = {
-              labels: ['Previous Month', 'Current Month'],
-              datasets: [{
-                  label: 'Revenue ($)',
-                  data: [33570.45, 36295.12],
-                  backgroundColor: ['#6c757d', '#0054a6']
-              }]
-          };
-          
-          chart = new Chart(chartContainer, {
-              type: 'bar',
-              data: data,
-              options: {
-                  plugins: {
-                      legend: {
-                          display: false
-                      }
-                  },
-                  scales: {
-                      y: {
-                          beginAtZero: true
-                      }
-                  }
-              }
-          });
-      }
-  }
+    function setSidebarState(isCollapsed) {
+        if (isCollapsed) {
+            document.body.classList.add('sidebar-collapsed');
+        } else {
+            document.body.classList.remove('sidebar-collapsed');
+        }
+        localStorage.setItem('safetrack_sidebarCollapsed', isCollapsed);
+        APP_STATE.isSidebarCollapsed = isCollapsed;
+    }
 
-  // Initialize Dashboard Charts
-  function initializeDashboardCharts() {
-      // Sales Chart for Dashboard
-      const salesChartCtx = document.getElementById('sales-chart');
-      if (salesChartCtx) {
-          new Chart(salesChartCtx, {
-              type: 'line',
-              data: {
-                  labels: ['Apr 27', 'Apr 28', 'Apr 29', 'Apr 30', 'May 1', 'May 2', 'May 3'],
-                  datasets: [{
-                      label: 'Daily Sales',
-                      data: [1220, 1380, 1170, 1450, 1560, 1320, 1245],
-                      backgroundColor: 'rgba(0, 84, 166, 0.1)',
-                      borderColor: '#0054a6',
-                      tension: 0.4,
-                      fill: true
-                  }]
-              },
-              options: {
-                  responsive: true,
-                  maintainAspectRatio: false,
-                  plugins: {
-                      legend: {
-                          display: false
-                      }
-                  },
-                  scales: {
-                      y: {
-                          beginAtZero: true,
-                          ticks: {
-                              callback: function(value) {
-                                  return '$' + value;
-                              }
-                          }
-                      }
-                  }
-              }
-          });
-      }
-  }
+    function toggleSidebar() {
+        if (window.innerWidth < 992) {
+            // Mobile mode: show/hide sidebar
+            document.body.classList.toggle('sidebar-open');
+            APP_STATE.isSidebarOpen = document.body.classList.contains('sidebar-open');
+        } else {
+            // Desktop mode: expand/collapse sidebar
+            setSidebarState(!APP_STATE.isSidebarCollapsed);
+        }
+    }
 
-  // Initialize Sales Charts
-  function initializeSalesCharts() {
-      // Revenue Chart
-      const revenueChartCtx = document.getElementById('revenue-chart');
-      if (revenueChartCtx) {
-          new Chart(revenueChartCtx, {
-              type: 'line',
-              data: {
-                  labels: ['Apr 4', 'Apr 9', 'Apr 14', 'Apr 19', 'Apr 24', 'Apr 29', 'May 4'],
-                  datasets: [{
-                      label: 'Revenue',
-                      data: [5280, 5760, 6120, 5890, 6340, 5970, 6295],
-                      borderColor: '#0054a6',
-                      backgroundColor: 'rgba(0, 84, 166, 0.1)',
-                      tension: 0.4,
-                      fill: true
-                  }]
-              },
-              options: {
-                  responsive: true,
-                  maintainAspectRatio: false,
-                  plugins: {
-                      legend: {
-                          display: false
-                      }
-                  },
-                  scales: {
-                      y: {
-                          beginAtZero: true,
-                          ticks: {
-                              callback: function(value) {
-                                  return '$' + value;
-                              }
-                          }
-                      }
-                  }
-              }
-          });
-      }
+    function navigateTo(sectionId) {
+        // Update active state in navigation
+        document.querySelectorAll('.nav-menu li').forEach(item => {
+            if (item.getAttribute('data-target') === sectionId) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        });
+        
+        // Show/hide content sections
+        document.querySelectorAll('.content-section').forEach(section => {
+            if (section.id === sectionId) {
+                section.classList.add('active');
+                
+                // Update breadcrumb
+                const breadcrumb = document.querySelector('.breadcrumb ol');
+                if (breadcrumb) {
+                    breadcrumb.innerHTML = `
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#" aria-current="page">${sectionId.charAt(0).toUpperCase() + sectionId.slice(1)}</a></li>
+                    `;
+                }
+                
+                // Refresh charts in this section if needed
+                refreshSectionCharts(sectionId);
+            } else {
+                section.classList.remove('active');
+            }
+        });
+        
+        // Close sidebar on mobile after navigation
+        if (window.innerWidth < 992 && APP_STATE.isSidebarOpen) {
+            document.body.classList.remove('sidebar-open');
+            APP_STATE.isSidebarOpen = false;
+        }
+        
+        // Update app state
+        APP_STATE.currentSection = sectionId;
+    }
+    
+    function refreshSectionCharts(sectionId) {
+        // Get all charts in this section and refresh them
+        const chartContainers = document.querySelectorAll(`#${sectionId} .chart-container canvas`);
+        chartContainers.forEach(canvas => {
+            const chartId = canvas.id;
+            if (chartId && APP_STATE.charts[chartId]) {
+                APP_STATE.charts[chartId].update();
+            }
+        });
+    }
 
-      // Category Chart
-      const categoryChartCtx = document.getElementById('category-chart');
-      if (categoryChartCtx) {
-          new Chart(categoryChartCtx, {
-              type: 'doughnut',
-              data: {
-                  labels: ['Burgers', 'Fries', 'Shakes', 'Pizza', 'Other'],
-                  datasets: [{
-                      data: [12458.25, 7259.02, 5444.27, 4718.36, 6415.22],
-                      backgroundColor: [
-                          '#0054a6',
-                          '#ffa700',
-                          '#17a2b8',
-                          '#28a745',
-                          '#6c757d'
-                      ],
-                      borderWidth: 0
-                  }]
-              },
-              options: {
-                  responsive: true,
-                  maintainAspectRatio: false,
-                  plugins: {
-                      legend: {
-                          display: false
-                      }
-                  }
-              }
-          });
-      }
-  }
+    function initNavigation() {
+        // Navigation menu click event
+        document.querySelectorAll('.nav-menu li').forEach(item => {
+            item.addEventListener('click', function() {
+                const targetSection = this.getAttribute('data-target');
+                if (targetSection) {
+                    navigateTo(targetSection);
+                }
+            });
+        });
+        
+        // Menu toggle button
+        const menuToggleBtn = document.querySelector('.menu-toggle');
+        if (menuToggleBtn) {
+            menuToggleBtn.addEventListener('click', toggleSidebar);
+        }
+        
+        // Set initial active section
+        navigateTo(APP_STATE.currentSection);
+        
+        // Keyboard shortcuts for navigation
+        document.addEventListener('keydown', function(e) {
+            // Alt + number for navigation
+            if (e.altKey && !isNaN(e.key) && e.key >= 1 && e.key <= 9) {
+                const navItems = document.querySelectorAll('.nav-menu li[data-shortcut]');
+                navItems.forEach(item => {
+                    const shortcut = item.getAttribute('data-shortcut');
+                    if (shortcut === `Alt+${e.key}`) {
+                        item.click();
+                    }
+                });
+            }
+            
+            // Cmd/Ctrl + K for search
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault();
+                const searchInput = document.querySelector('.search-bar input');
+                if (searchInput) {
+                    searchInput.focus();
+                }
+            }
+            
+            // Cmd/Ctrl + / for keyboard shortcuts modal
+            if ((e.metaKey || e.ctrlKey) && e.key === '/') {
+                e.preventDefault();
+                toggleShortcutsModal();
+            }
+        });
+        
+        // Add recently visited items clicks
+        document.querySelectorAll('.recent-links li').forEach(item => {
+            item.addEventListener('click', function() {
+                // This would normally navigate to a specific page or section
+                // For demo, just show a message
+                showToast('Navigating to recently visited item');
+            });
+        });
+    }
 
-  // Initialize Inventory Charts
-  function initializeInventoryCharts() {
-      // Forecast Chart
-      const forecastChartCtx = document.getElementById('forecast-chart');
-      if (forecastChartCtx) {
-          new Chart(forecastChartCtx, {
+    function initInteractiveElements() {
+        // Theme toggle
+        const themeToggle = document.getElementById('theme-switch');
+        if (themeToggle) {
+            themeToggle.addEventListener('change', function() {
+                setThemeMode(this.checked);
+            });
+        }
+        
+        // Tabs functionality
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                const targetId = this.getAttribute('data-tab');
+                const tabContainer = this.closest('.tabs-container');
+                
+                if (targetId && tabContainer) {
+                    // Update active tab
+                    tabContainer.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show target content
+                    tabContainer.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                        if (content.id === targetId) {
+                            content.classList.add('active');
+                        }
+                    });
+                }
+            });
+        });
+        
+        // Tutorial overlay
+        const tutorialOverlay = document.getElementById('tutorial-overlay');
+        if (tutorialOverlay) {
+            // Close button
+            const closeButton = tutorialOverlay.querySelector('.close-tutorial');
+            if (closeButton) {
+                closeButton.addEventListener('click', function() {
+                    tutorialOverlay.style.display = 'none';
+                    localStorage.setItem('safetrack_tutorialSeen', 'true');
+                });
+            }
+            
+            // Skip button
+            const skipButton = tutorialOverlay.querySelector('.btn-secondary');
+            if (skipButton) {
+                skipButton.addEventListener('click', function() {
+                    tutorialOverlay.style.display = 'none';
+                    localStorage.setItem('safetrack_tutorialSeen', 'true');
+                });
+            }
+            
+            // Start tour button
+            const startTourButton = tutorialOverlay.querySelector('.btn-primary');
+            if (startTourButton) {
+                startTourButton.addEventListener('click', function() {
+                    tutorialOverlay.style.display = 'none';
+                    localStorage.setItem('safetrack_tutorialSeen', 'true');
+                    startGuidedTour();
+                });
+            }
+        }
+        
+        // Shortcuts modal
+        const shortcutsModal = document.getElementById('keyboard-shortcuts-modal');
+        if (shortcutsModal) {
+            shortcutsModal.querySelectorAll('.close-modal').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    shortcutsModal.style.display = 'none';
+                });
+            });
+        }
+        
+        // Dashboard date range selector
+        const dateRangeButtons = document.querySelectorAll('.date-range-selector button');
+        dateRangeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                dateRangeButtons.forEach(btn => btn.classList.remove('selected'));
+                this.classList.add('selected');
+                updateDashboardData(this.textContent.trim().toLowerCase());
+            });
+        });
+        
+        // AI Assistant chat
+        initAIAssistant();
+        
+        // Make dashboard cards draggable
+        initDraggableCards();
+    }
+    
+    function toggleShortcutsModal() {
+        const modal = document.getElementById('keyboard-shortcuts-modal');
+        if (modal) {
+            if (modal.style.display === 'flex') {
+                modal.style.display = 'none';
+            } else {
+                modal.style.display = 'flex';
+            }
+        }
+    }
+    
+    function startGuidedTour() {
+        // This would normally start a step-by-step guided tour
+        // For demo, just show a message
+        showToast('Guided tour started');
+    }
+    
+    function updateDashboardData(timeRange) {
+        // Simulate data update
+        let salesData;
+        
+        switch(timeRange) {
+            case 'today':
+                salesData = {
+                    today: '$1,245.80',
+                    week: '$8,762.45',
+                    month: '$36,295.12',
+                    todayChange: '+5.2%',
+                    weekChange: '+3.7%',
+                    monthChange: '+8.1%'
+                };
+                break;
+                
+            case 'week':
+                salesData = {
+                    today: '$8,762.45',
+                    week: '$35,419.78',
+                    month: '$142,386.51',
+                    todayChange: '+3.7%',
+                    weekChange: '+4.2%',
+                    monthChange: '+6.8%'
+                };
+                break;
+                
+            case 'month':
+                salesData = {
+                    today: '$36,295.12',
+                    week: '$142,386.51',
+                    month: '$425,782.65',
+                    todayChange: '+8.1%',
+                    weekChange: '+6.8%',
+                    monthChange: '+5.4%'
+                };
+                break;
+                
+            case 'custom':
+                // Show date picker
+                showToast('Date picker would appear here');
+                return;
+        }
+        
+        // Update metrics on dashboard
+        if (salesData) {
+            document.querySelectorAll('.metrics-row .metric-item').forEach((item) => {
+                const metricLabel = item.querySelector('.metric-label');
+                if (metricLabel) {
+                    const label = metricLabel.textContent.toLowerCase();
+                    const metricValue = item.querySelector('.metric-value');
+                    const metricChange = item.querySelector('.metric-change');
+                    
+                    if (label.includes('today') && metricValue && metricChange) {
+                        metricValue.textContent = salesData.today;
+                        metricChange.textContent = salesData.todayChange;
+                    } else if (label.includes('week') && metricValue && metricChange) {
+                        metricValue.textContent = salesData.week;
+                        metricChange.textContent = salesData.weekChange;
+                    } else if (label.includes('month') && metricValue && metricChange) {
+                        metricValue.textContent = salesData.month;
+                        metricChange.textContent = salesData.monthChange;
+                    }
+                }
+            });
+        }
+        
+        // Update charts
+        updateChartData(timeRange);
+        
+        // Show data loading indicator
+        const loadingIndicator = document.querySelector('.loading-indicator');
+        if (loadingIndicator) {
+            loadingIndicator.style.display = 'flex';
+            setTimeout(() => {
+                loadingIndicator.style.display = 'none';
+                
+                // Update last updated time
+                const lastUpdated = document.querySelector('.last-updated');
+                if (lastUpdated) {
+                    const now = new Date();
+                    lastUpdated.textContent = `Last updated: Today at ${now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
+                }
+                
+                // Show success message
+                showToast(`Dashboard updated to show ${timeRange} data`);
+            }, 800);
+        }
+    }
+    
+    function updateChartData(timeRange) {
+        // Update sales trend chart
+        if (APP_STATE.charts.salesTrendChart) {
+            let labels, data;
+            
+            switch(timeRange) {
+                case 'today':
+                    labels = ['8AM', '10AM', '12PM', '2PM', '4PM', '6PM', '8PM'];
+                    data = [120, 245, 380, 210, 180, 240, 150];
+                    break;
+                    
+                case 'week':
+                    labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                    data = [1220, 1380, 1170, 1450, 1560, 1320, 1245];
+                    break;
+                    
+                case 'month':
+                    labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+                    data = [8450, 9370, 8920, 9560];
+                    break;
+                    
+                default:
+                    return;
+            }
+            
+            APP_STATE.charts.salesTrendChart.data.labels = labels;
+            APP_STATE.charts.salesTrendChart.data.datasets[0].data = data;
+            APP_STATE.charts.salesTrendChart.update();
+        }
+        
+        // Update other charts as needed
+    }
+    
+    function initAIAssistant() {
+        const chatInput = document.querySelector('.chat-input');
+        const sendButton = document.querySelector('.chat-send');
+        const chatMessages = document.querySelector('.chat-messages');
+        const suggestionChips = document.querySelectorAll('.suggestion-chips .chip');
+        
+        // Send message when clicking send button
+        if (sendButton && chatInput) {
+            sendButton.addEventListener('click', function() {
+                sendMessage();
+            });
+        }
+        
+        // Send message when pressing Enter in input
+        if (chatInput) {
+            chatInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+        }
+        
+        // Handle suggestion chips
+        if (suggestionChips) {
+            suggestionChips.forEach(chip => {
+                chip.addEventListener('click', function() {
+                    if (chatInput) {
+                        chatInput.value = this.textContent;
+                        sendMessage();
+                    }
+                });
+            });
+        }
+        
+        // Handle insight actions
+        document.querySelectorAll('.insight-actions button').forEach(button => {
+            button.addEventListener('click', function() {
+                const action = this.textContent.trim();
+                const insightCard = this.closest('.insight-card');
+                
+                if (action === 'Dismiss' && insightCard) {
+                    // Remove the insight card with animation
+                    insightCard.style.opacity = '0';
+                    setTimeout(() => {
+                        insightCard.style.display = 'none';
+                    }, 300);
+                } else {
+                    // Handle other actions
+                    showToast(`Executing action: ${action}`);
+                }
+            });
+        });
+        
+        function sendMessage() {
+            if (!chatInput || !chatInput.value.trim() || !chatMessages) return;
+            
+            // Add user message
+            addMessage('user', chatInput.value);
+            
+            // Save the message and clear input
+            const userMessage = chatInput.value;
+            chatInput.value = '';
+            
+            // Show thinking indicator
+            addMessage('assistant', '<div class="typing-indicator"><span></span><span></span><span></span></div>', false);
+            
+            // Simulate AI response after a delay
+            setTimeout(() => {
+                // Remove thinking indicator
+                const typingIndicator = document.querySelector('.typing-indicator');
+                if (typingIndicator && typingIndicator.parentElement && typingIndicator.parentElement.parentElement) {
+                    typingIndicator.parentElement.parentElement.remove();
+                }
+                
+                // Process the message and generate a response
+                processAIQuery(userMessage);
+            }, 1500);
+        }
+        
+        function addMessage(type, content, scrollToBottom = true) {
+            if (!chatMessages) return;
+            
+            const messageHTML = createMessageHTML(type, content);
+            chatMessages.insertAdjacentHTML('beforeend', messageHTML);
+            
+            if (scrollToBottom) {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        }
+        
+        function createMessageHTML(type, content) {
+            if (type === 'user') {
+                return `
+                    <div class="message user">
+                        <div class="message-avatar">YO</div>
+                        <div class="message-bubble">
+                            <p>${content}</p>
+                        </div>
+                    </div>
+                `;
+            } else if (type === 'assistant') {
+                return `
+                    <div class="message assistant">
+                        <div class="message-avatar">
+                            <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12C4,14.09 4.8,16 6.11,17.41L9.88,9.88L17.41,6.11C16,4.8 14.09,4 12,4M12,20A8,8 0 0,0 20,12C20,9.91 19.2,8 17.89,6.59L14.12,14.12L6.59,17.89C8,19.2 9.91,20 12,20M12,12L11.23,11.23L9.7,14.3L12.77,12.77L12,12M12,12L12.77,12.77L15.3,10.7L12.23,9.23L12,12Z" /></svg>
+                        </div>
+                        <div class="message-bubble">
+                            ${content}
+                        </div>
+                    </div>
+                `;
+            } else if (type === 'system') {
+                return `
+                    <div class="message system">
+                        <div class="message-content">
+                            <p>${content}</p>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            return ''; // Default empty string if no matching type
+        }
+        
+        function processAIQuery(query) {
+            if (!query) return;
+            
+            query = query.toLowerCase();
+            let response = '';
+            
+            // Simple pattern matching for demo
+            if (query.includes('sales') || query.includes('revenue')) {
+                response = `
+                    <p>Here's a summary of your sales performance:</p>
+                    <ul>
+                        <li>Today: $1,245.80 (↑5.2% from yesterday)</li>
+                        <li>This Week: $8,762.45 (↑3.7% from last week)</li>
+                        <li>This Month: $36,295.12 (↑8.1% from last month)</li>
+                    </ul>
+                    <p>Your top selling category this month is Burgers (34.3% of total revenue), followed by Fries (20.0%) and Shakes (15.0%).</p>
+                    <p>Would you like to see a detailed breakdown or forecasts for next month?</p>
+                `;
+                
+                // Add chart visualization after a small delay
+                setTimeout(() => {
+                    addMessage('assistant', `
+                        <div class="visualization-container">
+                            <h4>Monthly Sales Trend (Past 6 Months)</h4>
+                            <div class="chart-placeholder">
+                                <canvas id="ai-sales-chart"></canvas>
+                            </div>
+                        </div>
+                    `);
+                    
+                    // Initialize chart
+                    const ctx = document.getElementById('ai-sales-chart');
+                    if (ctx) {
+                        new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: ['Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May'],
+                                datasets: [{
+                                    label: 'Revenue ($)',
+                                    data: [32450, 30980, 33570, 34120, 33570, 36295],
+                                    borderColor: '#0054a6',
+                                    backgroundColor: 'rgba(0, 84, 166, 0.1)',
+                                    tension: 0.4,
+                                    fill: true
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        display: false
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: false
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }, 500);
+            }
+            else if (query.includes('inventory') || query.includes('stock')) {
+                response = `
+                    <p>Here's your current inventory status:</p>
+                    <ul>
+                        <li><strong class="text-danger">Critical (1 item):</strong> Vegetarian Patties - Out of stock</li>
+                        <li><strong class="text-warning">Low Stock (3 items):</strong> Burger Buns (15%), Cheese Slices (20%), Soda Cups (25%)</li>
+                        <li><strong class="text-success">Healthy Stock (120 items)</strong></li>
+                    </ul>
+                    <p>Based on your current sales trends, I recommend placing orders for the following items:</p>
+                    <ol>
+                        <li>Vegetarian Patties - 40 units (urgent)</li>
+                        <li>Burger Buns - 45 packs</li>
+                        <li>Cheese Slices - 35 packs</li>
+                    </ol>
+                    <p>Would you like me to prepare an order request for your approval?</p>
+                `;
+            }
+            else if (query.includes('staff') || query.includes('employee')) {
+                response = `
+                    <p>Your staff overview:</p>
+                    <ul>
+                        <li>Total Staff: 14 employees</li>
+                        <li>Currently On Duty: 7 employees</li>
+                        <li>Next Shift Change: 2:00 PM (in 3 hours)</li>
+                    </ul>
+                    <p><strong>Certification Status:</strong></p>
+                    <ul>
+                        <li><span class="text-warning">⚠️ Expiring Soon (2):</span> John Doe (7 days), Maria Garcia (14 days)</li>
+                        <li><span class="text-success">✓ Valid (26 certifications)</span></li>
+                    </ul>
+                    <p>Would you like me to send reminder emails to staff with expiring certifications?</p>
+                `;
+            }
+            else if (query.includes('compliance') || query.includes('certification')) {
+                response = `
+                    <p>Compliance status overview:</p>
+                    <ul>
+                        <li><strong>Overall Compliance Score:</strong> 96% <span class="positive">(↑4% from last month)</span></li>
+                        <li><strong>Staff Certifications:</strong> 93% compliant (2 expiring soon)</li>
+                        <li><strong>Inspections:</strong> Health inspection due in 6 days</li>
+                        <li><strong>Action Required:</strong> Fire safety inspection is overdue by 5 days</li>
+                    </ul>
+                    <p><strong>Recommended Actions:</strong></p>
+                    <ol>
+                        <li>Schedule fire safety inspection immediately</li>
+                        <li>Send certification renewal reminders to John Doe and Maria Garcia</li>
+                        <li>Prepare for health inspection (cleaning checklist is available)</li>
+                    </ol>
+                    <p>Would you like me to help schedule the fire safety inspection?</p>
+                `;
+            }
+            else {
+                response = `
+                    <p>I'm here to help you with managing Soley's Fast Food restaurant. You can ask me about:</p>
+                    <ul>
+                        <li>Sales performance and trends</li>
+                        <li>Inventory status and ordering recommendations</li>
+                        <li>Staff management and scheduling</li>
+                        <li>Compliance and certification tracking</li>
+                        <li>Data analysis and custom reports</li>
+                    </ul>
+                    <p>What information would you like to know about your restaurant today?</p>
+                `;
+            }
+            
+            // Add response to chat
+            addMessage('assistant', response);
+        }
+    }
+    
+    function initDraggableCards() {
+        // This would normally use a library like SortableJS
+        // For demo, just add a class to show it's draggable
+        const dashboardCards = document.querySelectorAll('.dashboard-card');
+        dashboardCards.forEach(card => {
+            card.classList.add('draggable');
+            
+            // Add drag handle to card headers
+            const cardHeader = card.querySelector('.card-header');
+            if (cardHeader) {
+                cardHeader.style.cursor = 'move';
+                
+                // Show movement on mousedown for demo
+                cardHeader.addEventListener('mousedown', function(e) {
+                    if (e.target === cardHeader || e.target.parentNode === cardHeader) {
+                        card.style.boxShadow = 'var(--shadow-xl)';
+                        card.style.transform = 'scale(1.02)';
+                        
+                        // Reset after mouseup
+                        document.addEventListener('mouseup', function resetCard() {
+                            card.style.boxShadow = '';
+                            card.style.transform = '';
+                            document.removeEventListener('mouseup', resetCard);
+                        });
+                    }
+                });
+            }
+        });
+        
+        // Save/Reset layout buttons
+        const saveLayoutBtn = document.querySelector('.dashboard-actions button:first-child');
+        const resetLayoutBtn = document.querySelector('.dashboard-actions button:last-child');
+        
+        if (saveLayoutBtn) {
+            saveLayoutBtn.addEventListener('click', function() {
+                showToast('Dashboard layout saved');
+            });
+        }
+        
+        if (resetLayoutBtn) {
+            resetLayoutBtn.addEventListener('click', function() {
+                showToast('Dashboard layout reset to default');
+            });
+        }
+    }
+    
+    function showToast(message) {
+        // Create toast element if it doesn't exist
+        let toast = document.querySelector('.toast-notification');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.className = 'toast-notification';
+            document.body.appendChild(toast);
+            
+            // Add styles
+            toast.style.position = 'fixed';
+            toast.style.bottom = '24px';
+            toast.style.right = '24px';
+            toast.style.background = 'var(--bg-card)';
+            toast.style.color = 'var(--text-primary)';
+            toast.style.padding = '12px 16px';
+            toast.style.borderRadius = '8px';
+            toast.style.boxShadow = 'var(--shadow-lg)';
+            toast.style.zIndex = '9999';
+            toast.style.transform = 'translateY(100px)';
+            toast.style.opacity = '0';
+            toast.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+            toast.style.border = '1px solid var(--border-color)';
+            toast.style.fontSize = '0.875rem';
+        }
+        
+        // Set message and show toast
+        toast.textContent = message;
+        toast.style.transform = 'translateY(0)';
+        toast.style.opacity = '1';
+        
+        // Hide toast after 3 seconds
+        clearTimeout(toast.timeout);
+        toast.timeout = setTimeout(() => {
+            toast.style.transform = 'translateY(100px)';
+            toast.style.opacity = '0';
+        }, 3000);
+    }
+
+    function initCharts() {
+      // Sales Trend Chart
+      const salesTrendCtx = document.getElementById('sales-trend-chart');
+      if (salesTrendCtx) {
+          APP_STATE.charts.salesTrendChart = new Chart(salesTrendCtx, {
               type: 'line',
               data: {
                   labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                  datasets: [
-                      {
-                          label: 'Burger Patties',
-                          data: [145, 125, 105, 85, 65, 45, 25],
-                          borderColor: '#0054a6',
-                          tension: 0.4,
-                          fill: false
-                      },
-                      {
-                          label: 'Burger Buns',
-                          data: [35, 30, 25, 20, 15, 10, 5],
-                          borderColor: '#ffc107',
-                          tension: 0.4,
-                          fill: false
-                      },
-                      {
-                          label: 'Cheese Slices',
-                          data: [40, 35, 30, 25, 20, 15, 10],
-                          borderColor: '#28a745',
-                          tension: 0.4,
-                          fill: false
-                      }
-                  ]
-              },
-              options: {
-                  responsive: true,
-                  maintainAspectRatio: false,
-                  plugins: {
-                      legend: {
-                          position: 'top'
-                      }
-                  },
-                  scales: {
-                      y: {
-                          beginAtZero: true
-                      }
-                  }
-              }
-          });
-      }
-  }
-
-  // Initialize Chatbot Charts
-  function initializeChatbotCharts() {
-      // Initial chart for chat results
-      const chatResultsChartCtx = document.getElementById('chat-results-chart');
-      if (chatResultsChartCtx) {
-          new Chart(chatResultsChartCtx, {
-              type: 'bar',
-              data: {
-                  labels: ['Double Cheeseburger', 'Loaded Fries', 'Chocolate Shake'],
                   datasets: [{
-                      label: 'Sales Last Week',
-                      data: [128, 97, 89],
-                      backgroundColor: '#0054a6'
+                      label: 'Daily Sales',
+                      data: [1220, 1380, 1170, 1450, 1560, 1320, 1245],
+                      borderColor: 'rgb(0, 84, 166)',
+                      backgroundColor: 'rgba(0, 84, 166, 0.1)',
+                      tension: 0.4,
+                      fill: true
                   }]
               },
               options: {
-                  indexAxis: 'y',
-                  plugins: {
-                      legend: {
-                          display: false
+                  scales: {
+                      y: {
+                          grid: {
+                              color: 'rgba(0, 0, 0, 0.05)'
+                          }
+                      },
+                      x: {
+                          grid: {
+                              display: false
+                          }
                       }
+                  },
+                  interaction: {
+                      intersect: false,
+                      mode: 'index'
                   }
               }
           });
       }
   }
+        
+        // Category Performance Chart
+const categoryChartCtx = document.getElementById('category-performance-chart');
+if (categoryChartCtx) {
+    APP_STATE.charts.categoryChart = new Chart(categoryChartCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Burgers', 'Fries', 'Shakes', 'Pizza', 'Other'],
+            datasets: [{
+                data: [12458, 7259, 5444, 4718, 6415],
+                backgroundColor: [
+                    'rgb(0, 84, 166)',      // Primary
+                    'rgb(255, 167, 0)',     // Secondary
+                    'rgb(23, 162, 184)',    // Info
+                    'rgb(40, 167, 69)',     // Success
+                    'rgb(108, 117, 125)'    // Gray
+                ],
+                borderWidth: 0,
+                hoverOffset: 15
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                    padding: 10,
+                    cornerRadius: 4,
+                    callbacks: {
+                        label: function(context) {
+                            const value = context.raw;
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = Math.round((value / total) * 100);
+                            return `$${value} (${percentage}%)`;
+                        }
+                    }
+                }
+            },
+            cutout: '70%',
+            animation: {
+                animateScale: true,
+                animateRotate: true
+            }
+        }
+    });
+}
+        
+        // AI Comparison Chart
+        const aiComparisonChartCtx = document.getElementById('ai-comparison-chart');
+        if (aiComparisonChartCtx) {
+            try {
+                new Chart(aiComparisonChartCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Double Cheeseburger', 'Loaded Fries', 'Chocolate Shake', 'Pepperoni Pizza', 'Chicken Burger'],
+                        datasets: [
+                            {
+                                label: 'This Week',
+                                data: [432, 367, 298, 278, 265],
+                                backgroundColor: 'rgba(0, 84, 166, 0.8)',
+                                barPercentage: 0.6,
+                                categoryPercentage: 0.7
+                            },
+                            {
+                                label: 'Last Week',
+                                data: [410, 340, 290, 284, 236],
+                                backgroundColor: 'rgba(0, 84, 166, 0.3)',
+                                barPercentage: 0.6,
+                                categoryPercentage: 0.7
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        plugins: {
+                            legend: {
+                                position: 'top'
+                            }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.05)'
+                                }
+                            },
+                            y: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error("Error initializing AI comparison chart:", error);
+            }
+        }
+        
+        // Compliance Chart (SVG)
+const complianceChart = document.querySelector('.compliance-circle');
+if (complianceChart) {
+    // Animate the compliance score fill
+    setTimeout(() => {
+        complianceChart.style.strokeDasharray = '96, 100';
+    }, 500);
+}
+/**
+ * Safetrack Premium - Main JavaScript
+ * Version: 1.0.0
+ * Description: Controls all interactive elements of the Safetrack Premium dashboard
+ */
 
-  // Generate sample data for download - Call this function when export button is clicked
-  document.querySelector('.btn-export').addEventListener('click', function() {
-      generateExcelData();
-  });
-
-  function generateExcelData() {
-      // This is a simplified example. In a real app, you would use a library like SheetJS to create Excel files
-      alert('Excel data would be generated here. In a real implementation, this would create and download an Excel file with sales and inventory data for Soley\'s Fast Food.');
-      
-      // Simulated data structure - in a real app, this would be used to create the Excel file
-      const salesData = {
-          monthly: [
-              { month: 'May 2024', revenue: 30450.75, orders: 3215, avgOrder: 9.47 },
-              { month: 'Jun 2024', revenue: 31280.50, orders: 3302, avgOrder: 9.47 },
-              { month: 'Jul 2024', revenue: 32145.25, orders: 3350, avgOrder: 9.60 },
-              { month: 'Aug 2024', revenue: 33750.80, orders: 3425, avgOrder: 9.85 },
-              { month: 'Sep 2024', revenue: 31890.45, orders: 3310, avgOrder: 9.64 },
-              { month: 'Oct 2024', revenue: 32570.30, orders: 3380, avgOrder: 9.64 },
-              { month: 'Nov 2024', revenue: 34280.15, orders: 3520, avgOrder: 9.74 },
-              { month: 'Dec 2024', revenue: 38450.60, orders: 3890, avgOrder: 9.88 },
-              { month: 'Jan 2025', revenue: 33120.25, orders: 3450, avgOrder: 9.60 },
-              { month: 'Feb 2025', revenue: 32890.35, orders: 3390, avgOrder: 9.70 },
-              { month: 'Mar 2025', revenue: 33570.45, orders: 3417, avgOrder: 9.82 },
-              { month: 'Apr 2025', revenue: 36295.12, orders: 3642, avgOrder: 9.97 }
-          ],
-          
-          topItems: [
-              { name: 'Double Cheeseburger', category: 'Burgers', units: 1254, revenue: 6270.00 },
-              { name: 'Loaded Fries', category: 'Fries', units: 987, revenue: 3948.00 },
-              { name: 'Chocolate Shake', category: 'Shakes', units: 876, revenue: 3504.00 },
-              { name: 'Pepperoni Pizza', category: 'Pizza', units: 743, revenue: 3715.00 },
-              { name: 'Chicken Burger', category: 'Burgers', units: 698, revenue: 3490.00 },
-              { name: 'Vanilla Shake', category: 'Shakes', units: 654, revenue: 2616.00 },
-              { name: 'Regular Fries', category: 'Fries', units: 625, revenue: 1875.00 },
-              { name: 'BBQ Bacon Burger', category: 'Burgers', units: 589, revenue: 3534.00 },
-              { name: 'Cheese Pizza', category: 'Pizza', units: 542, revenue: 2710.00 },
-              { name: 'Hot Dog Deluxe', category: 'Hot Dogs', units: 520, revenue: 2080.00 }
-          ],
-          
-          inventory: [
-              { item: 'Beef Patties', category: 'Ingredients', stock: 145, minimum: 50, status: 'Good' },
-              { item: 'Burger Buns', category: 'Ingredients', stock: 35, minimum: 30, status: 'Low' },
-              { item: 'Cheese Slices', category: 'Ingredients', stock: 40, minimum: 25, status: 'Low' },
-              { item: 'French Fries', category: 'Ingredients', stock: 87, minimum: 40, status: 'Good' },
-              { item: 'Vegetarian Patties', category: 'Ingredients', stock: 0, minimum: 20, status: 'Out' },
-              { item: 'Soda Cups', category: 'Packaging', stock: 125, minimum: 100, status: 'Low' },
-              { item: 'Pizza Dough', category: 'Ingredients', stock: 65, minimum: 30, status: 'Good' },
-              { item: 'Hot Dog Buns', category: 'Ingredients', stock: 78, minimum: 35, status: 'Good' },
-              { item: 'Cola Syrup', category: 'Beverages', stock: 48, minimum: 25, status: 'Good' },
-              { item: 'Ice Cream Mix', category: 'Ingredients', stock: 52, minimum: 30, status: 'Good' }
-          ]
-      };
-  }
-
+document.addEventListener('DOMContentLoaded', function() {
+  // App State
+  const APP_STATE = {
+      isDarkMode: localStorage.getItem('safetrack_darkMode') === 'true' || false,
+      isSidebarCollapsed: localStorage.getItem('safetrack_sidebarCollapsed') === 'true' || false,
+      isSidebarOpen: true,
+      currentSection: 'dashboard',
+      charts: {}
+  };
+  
+  // Initialize the app (would call functions here)
 });
+
+    // Initialize Application
+    initApp();
+
+    function initApp() {
+        // Initialize theme
+        setThemeMode(APP_STATE.isDarkMode);
+        
+        // Initialize sidebar state
+        setSidebarState(APP_STATE.isSidebarCollapsed);
+        
+        // Set current date
+        updateCurrentDate();
+        
+        // Initialize navigation
+        initNavigation();
+        
+        // Initialize interactive elements
+        initInteractiveElements();
+        
+        // Initialize charts
+        initCharts();
+        
+        // Show tutorial for first time visitors (after a small delay)
+        if (!localStorage.getItem('safetrack_tutorialSeen')) {
+            setTimeout(() => {
+                const tutorialOverlay = document.getElementById('tutorial-overlay');
+                if (tutorialOverlay) {
+                    tutorialOverlay.style.display = 'flex';
+                }
+            }, 1000);
+        }
+        
+        // Remove loading overlay with animation
+        setTimeout(() => {
+            const loadingOverlay = document.querySelector('.loading-overlay');
+            if (loadingOverlay) {
+                loadingOverlay.style.opacity = '0';
+                setTimeout(() => {
+                    loadingOverlay.style.display = 'none';
+                }, 500);
+            }
+        }, 500);
+    }
+
+    function updateCurrentDate() {
+        const dateElement = document.getElementById('current-date');
+        if (dateElement) {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            dateElement.textContent = now.toLocaleDateString('en-US', options);
+        }
+    }
+
+    function setThemeMode(isDark) {
+        const themeSwitch = document.getElementById('theme-switch');
+        if (isDark) {
+            document.body.classList.add('dark-mode');
+            if (themeSwitch) {
+                themeSwitch.checked = true;
+            }
+        } else {
+            document.body.classList.remove('dark-mode');
+            if (themeSwitch) {
+                themeSwitch.checked = false;
+            }
+        }
+        localStorage.setItem('safetrack_darkMode', isDark);
+        APP_STATE.isDarkMode = isDark;
+    }
+
+    function setSidebarState(isCollapsed) {
+        if (isCollapsed) {
+            document.body.classList.add('sidebar-collapsed');
+        } else {
+            document.body.classList.remove('sidebar-collapsed');
+        }
+        localStorage.setItem('safetrack_sidebarCollapsed', isCollapsed);
+        APP_STATE.isSidebarCollapsed = isCollapsed;
+    }
+
+    function toggleSidebar() {
+        if (window.innerWidth < 992) {
+            // Mobile mode: show/hide sidebar
+            document.body.classList.toggle('sidebar-open');
+            APP_STATE.isSidebarOpen = document.body.classList.contains('sidebar-open');
+        } else {
+            // Desktop mode: expand/collapse sidebar
+            setSidebarState(!APP_STATE.isSidebarCollapsed);
+        }
+    }
+
+    function navigateTo(sectionId) {
+        // Update active state in navigation
+        document.querySelectorAll('.nav-menu li').forEach(item => {
+            if (item.getAttribute('data-target') === sectionId) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        });
+        
+        // Show/hide content sections
+        document.querySelectorAll('.content-section').forEach(section => {
+            if (section.id === sectionId) {
+                section.classList.add('active');
+                
+                // Update breadcrumb
+                const breadcrumb = document.querySelector('.breadcrumb ol');
+                if (breadcrumb) {
+                    breadcrumb.innerHTML = `
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#" aria-current="page">${sectionId.charAt(0).toUpperCase() + sectionId.slice(1)}</a></li>
+                    `;
+                }
+                
+                // Refresh charts in this section if needed
+                refreshSectionCharts(sectionId);
+            } else {
+                section.classList.remove('active');
+            }
+        });
+        
+        // Close sidebar on mobile after navigation
+        if (window.innerWidth < 992 && APP_STATE.isSidebarOpen) {
+            document.body.classList.remove('sidebar-open');
+            APP_STATE.isSidebarOpen = false;
+        }
+        
+        // Update app state
+        APP_STATE.currentSection = sectionId;
+    }
+    
+    function refreshSectionCharts(sectionId) {
+        // Get all charts in this section and refresh them
+        const chartContainers = document.querySelectorAll(`#${sectionId} .chart-container canvas`);
+        chartContainers.forEach(canvas => {
+            const chartId = canvas.id;
+            if (chartId && APP_STATE.charts[chartId]) {
+                APP_STATE.charts[chartId].update();
+            }
+        });
+    }
+
+    function initNavigation() {
+        // Navigation menu click event
+        document.querySelectorAll('.nav-menu li').forEach(item => {
+            item.addEventListener('click', function() {
+                const targetSection = this.getAttribute('data-target');
+                if (targetSection) {
+                    navigateTo(targetSection);
+                }
+            });
+        });
+        
+        // Menu toggle button
+        const menuToggleBtn = document.querySelector('.menu-toggle');
+        if (menuToggleBtn) {
+            menuToggleBtn.addEventListener('click', toggleSidebar);
+        }
+        
+        // Set initial active section
+        navigateTo(APP_STATE.currentSection);
+        
+        // Keyboard shortcuts for navigation
+        document.addEventListener('keydown', function(e) {
+            // Alt + number for navigation
+            if (e.altKey && !isNaN(e.key) && e.key >= 1 && e.key <= 9) {
+                const navItems = document.querySelectorAll('.nav-menu li[data-shortcut]');
+                navItems.forEach(item => {
+                    const shortcut = item.getAttribute('data-shortcut');
+                    if (shortcut === `Alt+${e.key}`) {
+                        item.click();
+                    }
+                });
+            }
+            
+            // Cmd/Ctrl + K for search
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault();
+                const searchInput = document.querySelector('.search-bar input');
+                if (searchInput) {
+                    searchInput.focus();
+                }
+            }
+            
+            // Cmd/Ctrl + / for keyboard shortcuts modal
+            if ((e.metaKey || e.ctrlKey) && e.key === '/') {
+                e.preventDefault();
+                toggleShortcutsModal();
+            }
+        });
+        
+        // Add recently visited items clicks
+        document.querySelectorAll('.recent-links li').forEach(item => {
+            item.addEventListener('click', function() {
+                // This would normally navigate to a specific page or section
+                // For demo, just show a message
+                showToast('Navigating to recently visited item');
+            });
+        });
+    }
+
+    function initInteractiveElements() {
+        // Theme toggle
+        const themeToggle = document.getElementById('theme-switch');
+        if (themeToggle) {
+            themeToggle.addEventListener('change', function() {
+                setThemeMode(this.checked);
+            });
+        }
+        
+        // Tabs functionality
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                const targetId = this.getAttribute('data-tab');
+                const tabContainer = this.closest('.tabs-container');
+                
+                if (targetId && tabContainer) {
+                    // Update active tab
+                    tabContainer.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show target content
+                    tabContainer.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                        if (content.id === targetId) {
+                            content.classList.add('active');
+                        }
+                    });
+                }
+            });
+        });
+        
+        // Tutorial overlay
+        const tutorialOverlay = document.getElementById('tutorial-overlay');
+        if (tutorialOverlay) {
+            // Close button
+            const closeButton = tutorialOverlay.querySelector('.close-tutorial');
+            if (closeButton) {
+                closeButton.addEventListener('click', function() {
+                    tutorialOverlay.style.display = 'none';
+                    localStorage.setItem('safetrack_tutorialSeen', 'true');
+                });
+            }
+            
+            // Skip button
+            const skipButton = tutorialOverlay.querySelector('.btn-secondary');
+            if (skipButton) {
+                skipButton.addEventListener('click', function() {
+                    tutorialOverlay.style.display = 'none';
+                    localStorage.setItem('safetrack_tutorialSeen', 'true');
+                });
+            }
+            
+            // Start tour button
+            const startTourButton = tutorialOverlay.querySelector('.btn-primary');
+            if (startTourButton) {
+                startTourButton.addEventListener('click', function() {
+                    tutorialOverlay.style.display = 'none';
+                    localStorage.setItem('safetrack_tutorialSeen', 'true');
+                    startGuidedTour();
+                });
+            }
+        }
+        
+        // Shortcuts modal
+        const shortcutsModal = document.getElementById('keyboard-shortcuts-modal');
+        if (shortcutsModal) {
+            shortcutsModal.querySelectorAll('.close-modal').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    shortcutsModal.style.display = 'none';
+                });
+            });
+        }
+        
+        // Dashboard date range selector
+        const dateRangeButtons = document.querySelectorAll('.date-range-selector button');
+        dateRangeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                dateRangeButtons.forEach(btn => btn.classList.remove('selected'));
+                this.classList.add('selected');
+                updateDashboardData(this.textContent.trim().toLowerCase());
+            });
+        });
+        
+        // AI Assistant chat
+        initAIAssistant();
+        
+        // Make dashboard cards draggable
+        initDraggableCards();
+    }
+    
+    function toggleShortcutsModal() {
+        const modal = document.getElementById('keyboard-shortcuts-modal');
+        if (modal) {
+            if (modal.style.display === 'flex') {
+                modal.style.display = 'none';
+            } else {
+                modal.style.display = 'flex';
+            }
+        }
+    }
+    
+    function startGuidedTour() {
+        // This would normally start a step-by-step guided tour
+        // For demo, just show a message
+        showToast('Guided tour started');
+    }
+    
+    function updateDashboardData(timeRange) {
+        // Simulate data update
+        let salesData;
+        
+        switch(timeRange) {
+            case 'today':
+                salesData = {
+                    today: '$1,245.80',
+                    week: '$8,762.45',
+                    month: '$36,295.12',
+                    todayChange: '+5.2%',
+                    weekChange: '+3.7%',
+                    monthChange: '+8.1%'
+                };
+                break;
+                
+            case 'week':
+                salesData = {
+                    today: '$8,762.45',
+                    week: '$35,419.78',
+                    month: '$142,386.51',
+                    todayChange: '+3.7%',
+                    weekChange: '+4.2%',
+                    monthChange: '+6.8%'
+                };
+                break;
+                
+            case 'month':
+                salesData = {
+                    today: '$36,295.12',
+                    week: '$142,386.51',
+                    month: '$425,782.65',
+                    todayChange: '+8.1%',
+                    weekChange: '+6.8%',
+                    monthChange: '+5.4%'
+                };
+                break;
+                
+            case 'custom':
+                // Show date picker
+                showToast('Date picker would appear here');
+                return;
+        }
+        
+        // Update metrics on dashboard
+        if (salesData) {
+            document.querySelectorAll('.metrics-row .metric-item').forEach((item) => {
+                const metricLabel = item.querySelector('.metric-label');
+                if (metricLabel) {
+                    const label = metricLabel.textContent.toLowerCase();
+                    const metricValue = item.querySelector('.metric-value');
+                    const metricChange = item.querySelector('.metric-change');
+                    
+                    if (label.includes('today') && metricValue && metricChange) {
+                        metricValue.textContent = salesData.today;
+                        metricChange.textContent = salesData.todayChange;
+                    } else if (label.includes('week') && metricValue && metricChange) {
+                        metricValue.textContent = salesData.week;
+                        metricChange.textContent = salesData.weekChange;
+                    } else if (label.includes('month') && metricValue && metricChange) {
+                        metricValue.textContent = salesData.month;
+                        metricChange.textContent = salesData.monthChange;
+                    }
+                }
+            });
+        }
+        
+        // Update charts
+        updateChartData(timeRange);
+        
+        // Show data loading indicator
+        const loadingIndicator = document.querySelector('.loading-indicator');
+        if (loadingIndicator) {
+            loadingIndicator.style.display = 'flex';
+            setTimeout(() => {
+                loadingIndicator.style.display = 'none';
+                
+                // Update last updated time
+                const lastUpdated = document.querySelector('.last-updated');
+                if (lastUpdated) {
+                    const now = new Date();
+                    lastUpdated.textContent = `Last updated: Today at ${now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
+                }
+                
+                // Show success message
+                showToast(`Dashboard updated to show ${timeRange} data`);
+            }, 800);
+        }
+    }
+    
+    function updateChartData(timeRange) {
+        // Update sales trend chart
+        if (APP_STATE.charts.salesTrendChart) {
+            let labels, data;
+            
+            switch(timeRange) {
+                case 'today':
+                    labels = ['8AM', '10AM', '12PM', '2PM', '4PM', '6PM', '8PM'];
+                    data = [120, 245, 380, 210, 180, 240, 150];
+                    break;
+                    
+                case 'week':
+                    labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                    data = [1220, 1380, 1170, 1450, 1560, 1320, 1245];
+                    break;
+                    
+                case 'month':
+                    labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+                    data = [8450, 9370, 8920, 9560];
+                    break;
+                    
+                default:
+                    return;
+            }
+            
+            APP_STATE.charts.salesTrendChart.data.labels = labels;
+            APP_STATE.charts.salesTrendChart.data.datasets[0].data = data;
+            APP_STATE.charts.salesTrendChart.update();
+        }
+        
+        // Update other charts as needed
+    }
+    
+    function initAIAssistant() {
+        const chatInput = document.querySelector('.chat-input');
+        const sendButton = document.querySelector('.chat-send');
+        const chatMessages = document.querySelector('.chat-messages');
+        const suggestionChips = document.querySelectorAll('.suggestion-chips .chip');
+        
+        // Send message when clicking send button
+        if (sendButton && chatInput) {
+            sendButton.addEventListener('click', function() {
+                sendMessage();
+            });
+        }
+        
+        // Send message when pressing Enter in input
+        if (chatInput) {
+            chatInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+        }
+        
+        // Handle suggestion chips
+        if (suggestionChips) {
+            suggestionChips.forEach(chip => {
+                chip.addEventListener('click', function() {
+                    if (chatInput) {
+                        chatInput.value = this.textContent;
+                        sendMessage();
+                    }
+                });
+            });
+        }
+        
+        // Handle insight actions
+        document.querySelectorAll('.insight-actions button').forEach(button => {
+            button.addEventListener('click', function() {
+                const action = this.textContent.trim();
+                const insightCard = this.closest('.insight-card');
+                
+                if (action === 'Dismiss' && insightCard) {
+                    // Remove the insight card with animation
+                    insightCard.style.opacity = '0';
+                    setTimeout(() => {
+                        insightCard.style.display = 'none';
+                    }, 300);
+                } else {
+                    // Handle other actions
+                    showToast(`Executing action: ${action}`);
+                }
+            });
+        });
+        
+        function sendMessage() {
+            if (!chatInput || !chatInput.value.trim() || !chatMessages) return;
+            
+            // Add user message
+            addMessage('user', chatInput.value);
+            
+            // Save the message and clear input
+            const userMessage = chatInput.value;
+            chatInput.value = '';
+            
+            // Show thinking indicator
+            addMessage('assistant', '<div class="typing-indicator"><span></span><span></span><span></span></div>', false);
+            
+            // Simulate AI response after a delay
+            setTimeout(() => {
+                // Remove thinking indicator
+                const typingIndicator = document.querySelector('.typing-indicator');
+                if (typingIndicator && typingIndicator.parentElement && typingIndicator.parentElement.parentElement) {
+                    typingIndicator.parentElement.parentElement.remove();
+                }
+                
+                // Process the message and generate a response
+                processAIQuery(userMessage);
+            }, 1500);
+        }
+        
+        function addMessage(type, content, scrollToBottom = true) {
+            if (!chatMessages) return;
+            
+            const messageHTML = createMessageHTML(type, content);
+            chatMessages.insertAdjacentHTML('beforeend', messageHTML);
+            
+            if (scrollToBottom) {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        }
+        
+        function createMessageHTML(type, content) {
+            if (type === 'user') {
+                return `
+                    <div class="message user">
+                        <div class="message-avatar">YO</div>
+                        <div class="message-bubble">
+                            <p>${content}</p>
+                        </div>
+                    </div>
+                `;
+            } else if (type === 'assistant') {
+                return `
+                    <div class="message assistant">
+                        <div class="message-avatar">
+                            <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12C4,14.09 4.8,16 6.11,17.41L9.88,9.88L17.41,6.11C16,4.8 14.09,4 12,4M12,20A8,8 0 0,0 20,12C20,9.91 19.2,8 17.89,6.59L14.12,14.12L6.59,17.89C8,19.2 9.91,20 12,20M12,12L11.23,11.23L9.7,14.3L12.77,12.77L12,12M12,12L12.77,12.77L15.3,10.7L12.23,9.23L12,12Z" /></svg>
+                        </div>
+                        <div class="message-bubble">
+                            ${content}
+                        </div>
+                    </div>
+                `;
+            } else if (type === 'system') {
+                return `
+                    <div class="message system">
+                        <div class="message-content">
+                            <p>${content}</p>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            return ''; // Default empty string if no matching type
+        }
+        
+        function processAIQuery(query) {
+            if (!query) return;
+            
+            query = query.toLowerCase();
+            let response = '';
+            
+            // Simple pattern matching for demo
+            if (query.includes('sales') || query.includes('revenue')) {
+                response = `
+                    <p>Here's a summary of your sales performance:</p>
+                    <ul>
+                        <li>Today: $1,245.80 (↑5.2% from yesterday)</li>
+                        <li>This Week: $8,762.45 (↑3.7% from last week)</li>
+                        <li>This Month: $36,295.12 (↑8.1% from last month)</li>
+                    </ul>
+                    <p>Your top selling category this month is Burgers (34.3% of total revenue), followed by Fries (20.0%) and Shakes (15.0%).</p>
+                    <p>Would you like to see a detailed breakdown or forecasts for next month?</p>
+                `;
+                
+                // Add chart visualization after a small delay
+                setTimeout(() => {
+                    addMessage('assistant', `
+                        <div class="visualization-container">
+                            <h4>Monthly Sales Trend (Past 6 Months)</h4>
+                            <div class="chart-placeholder">
+                                <canvas id="ai-sales-chart"></canvas>
+                            </div>
+                        </div>
+                    `);
+                    
+                    // Initialize chart
+                    const ctx = document.getElementById('ai-sales-chart');
+                    if (ctx) {
+                        new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: ['Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May'],
+                                datasets: [{
+                                    label: 'Revenue ($)',
+                                    data: [32450, 30980, 33570, 34120, 33570, 36295],
+                                    borderColor: '#0054a6',
+                                    backgroundColor: 'rgba(0, 84, 166, 0.1)',
+                                    tension: 0.4,
+                                    fill: true
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        display: false
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: false
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }, 500);
+            }
+            else if (query.includes('inventory') || query.includes('stock')) {
+                response = `
+                    <p>Here's your current inventory status:</p>
+                    <ul>
+                        <li><strong class="text-danger">Critical (1 item):</strong> Vegetarian Patties - Out of stock</li>
+                        <li><strong class="text-warning">Low Stock (3 items):</strong> Burger Buns (15%), Cheese Slices (20%), Soda Cups (25%)</li>
+                        <li><strong class="text-success">Healthy Stock (120 items)</strong></li>
+                    </ul>
+                    <p>Based on your current sales trends, I recommend placing orders for the following items:</p>
+                    <ol>
+                        <li>Vegetarian Patties - 40 units (urgent)</li>
+                        <li>Burger Buns - 45 packs</li>
+                        <li>Cheese Slices - 35 packs</li>
+                    </ol>
+                    <p>Would you like me to prepare an order request for your approval?</p>
+                `;
+            }
+            else if (query.includes('staff') || query.includes('employee')) {
+                response = `
+                    <p>Your staff overview:</p>
+                    <ul>
+                        <li>Total Staff: 14 employees</li>
+                        <li>Currently On Duty: 7 employees</li>
+                        <li>Next Shift Change: 2:00 PM (in 3 hours)</li>
+                    </ul>
+                    <p><strong>Certification Status:</strong></p>
+                    <ul>
+                        <li><span class="text-warning">⚠️ Expiring Soon (2):</span> John Doe (7 days), Maria Garcia (14 days)</li>
+                        <li><span class="text-success">✓ Valid (26 certifications)</span></li>
+                    </ul>
+                    <p>Would you like me to send reminder emails to staff with expiring certifications?</p>
+                `;
+            }
+            else if (query.includes('compliance') || query.includes('certification')) {
+                response = `
+                    <p>Compliance status overview:</p>
+                    <ul>
+                        <li><strong>Overall Compliance Score:</strong> 96% <span class="positive">(↑4% from last month)</span></li>
+                        <li><strong>Staff Certifications:</strong> 93% compliant (2 expiring soon)</li>
+                        <li><strong>Inspections:</strong> Health inspection due in 6 days</li>
+                        <li><strong>Action Required:</strong> Fire safety inspection is overdue by 5 days</li>
+                    </ul>
+                    <p><strong>Recommended Actions:</strong></p>
+                    <ol>
+                        <li>Schedule fire safety inspection immediately</li>
+                        <li>Send certification renewal reminders to John Doe and Maria Garcia</li>
+                        <li>Prepare for health inspection (cleaning checklist is available)</li>
+                    </ol>
+                    <p>Would you like me to help schedule the fire safety inspection?</p>
+                `;
+            }
+            else {
+                response = `
+                    <p>I'm here to help you with managing Soley's Fast Food restaurant. You can ask me about:</p>
+                    <ul>
+                        <li>Sales performance and trends</li>
+                        <li>Inventory status and ordering recommendations</li>
+                        <li>Staff management and scheduling</li>
+                        <li>Compliance and certification tracking</li>
+                        <li>Data analysis and custom reports</li>
+                    </ul>
+                    <p>What information would you like to know about your restaurant today?</p>
+                `;
+            }
+            
+            // Add response to chat
+            addMessage('assistant', response);
+        }
+    }
+    
+    function initDraggableCards() {
+        // This would normally use a library like SortableJS
+        // For demo, just add a class to show it's draggable
+        const dashboardCards = document.querySelectorAll('.dashboard-card');
+        dashboardCards.forEach(card => {
+            card.classList.add('draggable');
+            
+            // Add drag handle to card headers
+            const cardHeader = card.querySelector('.card-header');
+            if (cardHeader) {
+                cardHeader.style.cursor = 'move';
+                
+                // Show movement on mousedown for demo
+                cardHeader.addEventListener('mousedown', function(e) {
+                    if (e.target === cardHeader || e.target.parentNode === cardHeader) {
+                        card.style.boxShadow = 'var(--shadow-xl)';
+                        card.style.transform = 'scale(1.02)';
+                        
+                        // Reset after mouseup
+                        document.addEventListener('mouseup', function resetCard() {
+                            card.style.boxShadow = '';
+                            card.style.transform = '';
+                            document.removeEventListener('mouseup', resetCard);
+                        });
+                    }
+                });
+            }
+        });
+        
+        // Save/Reset layout buttons
+        const saveLayoutBtn = document.querySelector('.dashboard-actions button:first-child');
+        const resetLayoutBtn = document.querySelector('.dashboard-actions button:last-child');
+        
+        if (saveLayoutBtn) {
+            saveLayoutBtn.addEventListener('click', function() {
+                showToast('Dashboard layout saved');
+            });
+        }
+        
+        if (resetLayoutBtn) {
+            resetLayoutBtn.addEventListener('click', function() {
+                showToast('Dashboard layout reset to default');
+            });
+        }
+    }
+    
+    function showToast(message) {
+        // Create toast element if it doesn't exist
+        let toast = document.querySelector('.toast-notification');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.className = 'toast-notification';
+            document.body.appendChild(toast);
+            
+            // Add styles
+            toast.style.position = 'fixed';
+            toast.style.bottom = '24px';
+            toast.style.right = '24px';
+            toast.style.background = 'var(--bg-card)';
+            toast.style.color = 'var(--text-primary)';
+            toast.style.padding = '12px 16px';
+            toast.style.borderRadius = '8px';
+            toast.style.boxShadow = 'var(--shadow-lg)';
+            toast.style.zIndex = '9999';
+            toast.style.transform = 'translateY(100px)';
+            toast.style.opacity = '0';
+            toast.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+            toast.style.border = '1px solid var(--border-color)';
+            toast.style.fontSize = '0.875rem';
+        }
+        
+        // Set message and show toast
+        toast.textContent = message;
+        toast.style.transform = 'translateY(0)';
+        toast.style.opacity = '1';
+        
+        // Hide toast after 3 seconds
+        clearTimeout(toast.timeout);
+        toast.timeout = setTimeout(() => {
+            toast.style.transform = 'translateY(100px)';
+            toast.style.opacity = '0';
+        }, 3000);
+    }
+
+    function initCharts() {
+      // Sales Trend Chart
+      const salesTrendCtx = document.getElementById('sales-trend-chart');
+      if (salesTrendCtx) {
+          APP_STATE.charts.salesTrendChart = new Chart(salesTrendCtx, {
+              type: 'line',
+              data: {
+                  labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                  // Remove the trailing comma above ↑
+                  // The rest of your chart configuration...
+              }
+          });
+      }
+    }
